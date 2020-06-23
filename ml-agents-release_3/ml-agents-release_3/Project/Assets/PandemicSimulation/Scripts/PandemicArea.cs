@@ -54,6 +54,8 @@ public class PandemicArea : MonoBehaviour
         return new Vector3(Random.Range(-range, range), 1f,
                 Random.Range(-range, range)) + transform.position;
     }
+
+    
     public void ResetPandemicArea(GameObject[] agents) {
         foreach (GameObject agent in agents)
         {

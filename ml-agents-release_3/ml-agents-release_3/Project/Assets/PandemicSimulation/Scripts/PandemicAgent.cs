@@ -59,4 +59,73 @@ public class PandemicAgent : MonoBehaviour
                 break;
         }
     }
+    /// <summary>
+    /// Called when the agent's collider enters a trigger collider
+    /// </summary>
+    /// <param name="other">The trigger collider</param>
+    private void OnTriggerEnter(Collider other)
+    {
+        TriggerEnterOrStay(other);
+    }
+
+    /// <summary>
+    /// Called when the agent's collider stays in a trigger collider
+    /// </summary>
+    /// <param name="other">The trigger collider</param>
+    private void OnTriggerStay(Collider other)
+    {
+        TriggerEnterOrStay(other);
+    }
+
+    /// <summary>
+    /// Handles when the agen'ts collider enters or stays in a trigger collider
+    /// </summary>
+    /// <param name="collider">The trigger collider</param>
+    private void TriggerEnterOrStay(Collider collider)
+    {
+        //Check if its a dummyBot   
+        if (collider.CompareTag("dummyBot"))
+        {
+            //If it is infected 
+            if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED)
+            {
+                //Distance between two agents
+                float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
+                probability = Mathf.InverseLerp(exposureRadius, 0, distance) / 100;
+
+                //Debug.Log("Probability of getting infected is: " + probability);
+
+                if (Random.Range(0f, 1f) < probability)
+                {
+                    // Debug.Log("You got infected");
+                    m_InfectionStatus = agentStatus.INFECTED;
+                    changeAgentStatus();
+                }
+            }
+        }
+        //Check if it is an agent
+        else if (collider.CompareTag("agent"))
+        {
+            //Check if it is infected
+            if (collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus ==  agentStatus.INFECTED)
+            {             
+                //Distance between two agents
+                float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
+                probability = Mathf.InverseLerp(exposureRadius, 0, distance) / 100;
+
+                //Debug.Log("Probability of getting infected is: " + probability);
+
+                if (Random.Range(0f, 1f) < probability)
+                {
+                    Debug.Log("Agent got infected");
+                    m_InfectionStatus = agentStatus.INFECTED;
+                    changeAgentStatus();
+                }
+
+            }
+        }
+
+
+
+    }
 }

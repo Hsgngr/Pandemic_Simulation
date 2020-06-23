@@ -29,6 +29,7 @@ TagManager:
   - symbol_O_Goal
   - purpleAgent
   - purpleGoal
+  - dummyBot
   layers:
   - Default
   - TransparentFX

@@ -165,10 +165,11 @@ public class DummyBot : MonoBehaviour
         }
         //Check if it is an agent
         else if (collider.CompareTag("agent"))
-        {
+        {          
             //Check if it is infected
             if (collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus == PandemicAgent.agentStatus.INFECTED)
             {
+                Debug.Log(collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus);
                 //Distance between two agents
                 float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
                 probability = Mathf.InverseLerp(exposureRadius, 0, distance) / 100;
@@ -177,7 +178,7 @@ public class DummyBot : MonoBehaviour
 
                 if (Random.Range(0f, 1f) < probability)
                 {
-                    // Debug.Log("You got infected");
+                     Debug.Log("Agent got infected");
                     m_InfectionStatus = agentStatus.INFECTED;
                     changeAgentStatus();
                 }
