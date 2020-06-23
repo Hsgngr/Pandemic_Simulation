@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.MLAgents;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,44 +45,35 @@ public class DummyBot : MonoBehaviour
     /// <summary>
     /// States for being healthy or infectious
     /// </summary>
-    public enum Status
+    public enum agentStatus
     {
         HEALTHY,
         INFECTED
     }
 
-    public Status m_InfectionStatus;
+    public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
-    public Status InfectionStatus
+    public void changeAgentStatus()
     {
-        get => m_InfectionStatus;
-        set { SetStatus(value); }
-    }
-
-    void SetStatus(Status s)
-    {
-        Material m = null;
-        switch (s)
+        switch (m_InfectionStatus)
         {
-            case Status.HEALTHY:
-                m = healthyMaterial;
+            case agentStatus.HEALTHY:
+            GetComponentInChildren<Renderer>().material = healthyMaterial;
                 break;
-            case Status.INFECTED:
-                m = infectiousMaterial;
+            case agentStatus.INFECTED:
+                GetComponentInChildren<Renderer>().material = infectiousMaterial;
+                //Add - reward here.
                 break;
         }
-
-        m_InfectionStatus = s;
-        var renderer = GetComponent<Renderer>();
-        renderer.material = m;
     }
+
+  
 
     private void Awake()
     {
         pandemicArea = FindObjectOfType<PandemicArea>();
         targetPosition = pandemicArea.ChooseRandomPosition();
-        Status agentStatus;
-        agentStatus.HEALTHY;
+      
     }
 
     private void FixedUpdate()
@@ -92,6 +84,10 @@ public class DummyBot : MonoBehaviour
         }
 
     }
+    /// <summary>
+    /// Bot choose a random point in the map and moves towards this target until it reaches. 
+    /// When it reaches it finds another target.
+    /// </summary>
     private void moveRandomTarget()
     {
         if (Time.fixedTime >= nextActionTime)
@@ -122,10 +118,6 @@ public class DummyBot : MonoBehaviour
         }
     }
 
-    private void ExposedToInfection()
-    {
-
-    }
 
     /// <summary>
     /// Called when the agent's collider enters a trigger collider
@@ -155,18 +147,23 @@ public class DummyBot : MonoBehaviour
         // Değilse bişi yapma infected ise distance'ı al. distance 0 a eşit demek maximum exposure demek distance radius'a eşit demek minimum exposure demek. arasını linear arttır.
         if (collider.CompareTag("agent"))
         {
-            //Distance between two agents
-            float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
-            probability = Mathf.InverseLerp(exposureRadius, 0, distance) /100;
+            if(collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == agentStatus.INFECTED) {
 
-            //Debug.Log("Probability of getting infected is: " + probability);
+                //Distance between two agents
+                float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
+                probability = Mathf.InverseLerp(exposureRadius, 0, distance) /100;
 
-            if (Random.Range(0f, 1f) < probability)
-            {
-               // Debug.Log("You got infected");
-               // m_InfectionStatus.
-                GetComponentInChildren<Renderer>().material = infectiousMaterial;
+                //Debug.Log("Probability of getting infected is: " + probability);
+
+                if (Random.Range(0f, 1f) < probability)
+                {
+                    // Debug.Log("You got infected");
+                    m_InfectionStatus = agentStatus.INFECTED;
+                    changeAgentStatus();
+                }
+
             }
+            
         }
     }
 }

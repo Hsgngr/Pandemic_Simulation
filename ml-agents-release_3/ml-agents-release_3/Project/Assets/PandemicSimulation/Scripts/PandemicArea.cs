@@ -11,7 +11,8 @@ public class PandemicArea : MonoBehaviour
 
     //DummyBots
     public GameObject dummyBot;
-    public int dummyBotCount=10;
+    public int healthyBotCount=10;
+    public int infectedBotCount = 1;
 
     public GameObject[] agents;
 
@@ -27,6 +28,25 @@ public class PandemicArea : MonoBehaviour
         for (int i = 0; i < num; i++)
         {
             GameObject f = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)));         
+        }
+    }
+    /// <summary>
+    /// Creates objets in random position with given amount of healthy and infected agents
+    /// </summary>
+    /// <param name="obj"> The object which will be instantiated</param>
+    /// <param name="goodNum">The number of healthy agents</param>
+    /// <param name="infectedNum">The number of infected agents</param>
+    public void CreateObjectAtRandomPosition(GameObject obj, int healthyNum, int infectedNum)
+    {
+        for (int i = 0; i < healthyNum; i++)
+        {
+            GameObject f = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)));
+        }
+        for (int i = 0; i < infectedNum; i++)
+        {
+            GameObject b = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)));
+            b.GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
+            b.GetComponent<DummyBot>().changeAgentStatus();
         }
     }
     public Vector3 ChooseRandomPosition()
@@ -45,7 +65,7 @@ public class PandemicArea : MonoBehaviour
                 agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
             }
         }
-        CreateObjectAtRandomPosition(dummyBot, dummyBotCount);
+        CreateObjectAtRandomPosition(dummyBot,healthyBotCount,infectedBotCount);
     }
 
     public void Awake()
