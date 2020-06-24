@@ -21,6 +21,10 @@ public class DummyBot : MonoBehaviour
     [Tooltip("The maximum possible distance for exposure to occur aka radius")]
     public float exposureRadius = 8f;
 
+    [Tooltip("Infection Coefficient")]
+    [Range(0f, 100f)]
+    public float infectionCoeff;
+
     [Tooltip("The probability of exposure at that maximum distance")]
     [Range(0.0f, 0.001f)]
     public float probability;
@@ -69,21 +73,7 @@ public class DummyBot : MonoBehaviour
 
 
 
-    private void Awake()
-    {
-        pandemicArea = FindObjectOfType<PandemicArea>();
-        targetPosition = pandemicArea.ChooseRandomPosition();
 
-    }
-
-    private void FixedUpdate()
-    {
-        if (!isFrozen)
-        {
-            moveRandomTarget();
-        }
-
-    }
     /// <summary>
     /// Bot choose a random point in the map and moves towards this target until it reaches. 
     /// When it reaches it finds another target.
@@ -143,50 +133,66 @@ public class DummyBot : MonoBehaviour
     /// <param name="collider">The trigger collider</param>
     private void TriggerEnterOrStay(Collider collider)
     {
-        //Check if its a dummyBot   
-        if (collider.CompareTag("dummyBot"))
+        
+        //Check if our agent is healthy, otherwise there is nothing like reinfection
+        if (m_InfectionStatus == agentStatus.HEALTHY)
         {
-            //If it is infected 
-            if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == agentStatus.INFECTED)
+           
+            //Check if its a dummyBot   
+            if (collider.CompareTag("dummyBot"))
             {
-                //Distance between two agents
-                float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
-                probability = Mathf.InverseLerp(exposureRadius, 0, distance) / 100;
-
-                //Debug.Log("Probability of getting infected is: " + probability);
-
-                if (Random.Range(0f, 1f) < probability)
+                //If it is infected 
+                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == agentStatus.INFECTED)
                 {
-                    // Debug.Log("You got infected");
-                    m_InfectionStatus = agentStatus.INFECTED;
-                    changeAgentStatus();
+                    exposeInfection(collider.gameObject);
+                }
+            }
+            //Check if it is an agent
+            else if (collider.CompareTag("agent"))
+            {
+                //Check if it is infected
+                if (collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus == PandemicAgent.agentStatus.INFECTED)
+                {
+                    exposeInfection(collider.gameObject);
                 }
             }
         }
-        //Check if it is an agent
-        else if (collider.CompareTag("agent"))
-        {          
-            //Check if it is infected
-            if (collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus == PandemicAgent.agentStatus.INFECTED)
-            {
-                Debug.Log(collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus);
-                //Distance between two agents
-                float distance = Vector3.Distance(collider.gameObject.transform.position, transform.position);
-                probability = Mathf.InverseLerp(exposureRadius, 0, distance) / 100;
 
-                //Debug.Log("Probability of getting infected is: " + probability);
+    }
+    /// <summary>
+    /// Gets the distance between agents and expose with infenction probability.
+    /// There is an inverse proportion between distance and infection probability.
+    /// </summary>
+    /// <param name="infector">The agent who is inside of the collider</param>
+    private void exposeInfection(GameObject infector)
+    {
+        //Distance between two agents
+        float distance = Vector3.Distance(infector.transform.position, transform.position);
+        probability = Mathf.InverseLerp(exposureRadius, 0, distance) / infectionCoeff;
 
-                if (Random.Range(0f, 1f) < probability)
-                {
-                     Debug.Log("Agent got infected");
-                    m_InfectionStatus = agentStatus.INFECTED;
-                    changeAgentStatus();
-                }
+        //Debug.Log("Probability of getting infected is: " + probability);
 
-            }
+        if (Random.Range(0f, 1f) < probability)
+        {
+            // Debug.Log("You got infected");
+            m_InfectionStatus = agentStatus.INFECTED;
+            changeAgentStatus();
         }
+    }
 
+    private void Awake()
+    {
+        pandemicArea = FindObjectOfType<PandemicArea>();
+        targetPosition = pandemicArea.ChooseRandomPosition();
+        GetComponent<SphereCollider>().radius = exposureRadius;
 
+    }
+    private void FixedUpdate()
+    {
+        if (!isFrozen)
+        {
+            moveRandomTarget();
+        }
 
     }
 }
