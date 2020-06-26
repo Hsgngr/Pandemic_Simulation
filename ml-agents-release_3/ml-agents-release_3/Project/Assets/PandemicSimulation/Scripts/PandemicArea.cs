@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Barracuda;
 using Unity.MLAgents;
 using UnityEngine;
 /// <summary>
@@ -13,8 +14,8 @@ public class PandemicArea : MonoBehaviour
 
     [Header("DummyBots")]
     public GameObject dummyBot;
-    public int healthyBotCount = 10;
-    public int infectedBotCount = 1;
+    public int healthyBotCount;
+    public int infectedBotCount;
 
     //List of DummyBots
     public List<GameObject> dummyBotList = new List<GameObject>();
@@ -24,7 +25,7 @@ public class PandemicArea : MonoBehaviour
 
 
     [Header("InfectionSettings")]
-    [Tooltip("The maximum possible distance for exposure to occur aka radius")]
+    [Tooltip("The maximum possible distance for exposure to occur aka radius Default: 8f")]
     public float exposureRadius = 8f;
 
     [Tooltip("Propability of getting infected is divided byinfectionCoeff. (1 is most infectious 100 is minimum infectious)")]
@@ -35,8 +36,11 @@ public class PandemicArea : MonoBehaviour
     public float recoverTime = 50f;
 
     [Header("SIR Model")]
+    [System.NonSerialized]
     public int healthyCounter;
+    [System.NonSerialized]
     public int infectedCounter = 0;
+    [System.NonSerialized]
     public int recoveredCounter = 0;
 
     /// <summary>
@@ -90,7 +94,7 @@ public class PandemicArea : MonoBehaviour
     public void ResetPandemicArea(List<GameObject> agents)
     {
         //Reset infectedCounter and healthyCounter
-        infectedCounter = 0;
+        infectedCounter = 0;       
         healthyCounter = healthyBotCount + agents.Count;
 
 
@@ -121,14 +125,15 @@ public class PandemicArea : MonoBehaviour
                     dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
                     dummyBotList[i].transform.position = ChooseRandomPosition();
                     dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
+                    dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
                 }
                 else
-                {
-
+                {                 
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
                     dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
                     dummyBotList[i].transform.position = ChooseRandomPosition();
                     dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
+                    dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
                 }
 
             }

@@ -61,6 +61,8 @@ public class DummyBot : MonoBehaviour
         INFECTED,
         RECOVERED
     }
+    [Tooltip("Recovery time after the infection starts")]
+    public float recoverTime;
 
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
@@ -73,11 +75,13 @@ public class DummyBot : MonoBehaviour
                 break;
             case agentStatus.INFECTED:
                 GetComponentInChildren<Renderer>().material = infectiousMaterial;
+                pandemicAreaObj.GetComponent<PandemicArea>().healthyCounter--;
                 pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;
                 //Add - reward here.
                 break;
             case agentStatus.RECOVERED:
                 GetComponentInChildren<Renderer>().material = recoveredMaterial;
+                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter--;
                 pandemicAreaObj.GetComponent<PandemicArea>().recoveredCounter++;               
                 break;
         }
@@ -194,10 +198,13 @@ public class DummyBot : MonoBehaviour
 
     private void Awake()
     {
-        pandemicArea = FindObjectOfType<PandemicArea>();
+        //Get the PandemicArea
+        pandemicArea = GetComponentInParent<PandemicArea>();
         pandemicAreaObj = pandemicArea.gameObject;
+
         targetPosition = pandemicArea.ChooseRandomPosition();
         GetComponent<SphereCollider>().radius = exposureRadius;
+        recoverTime = pandemicArea.recoverTime;
 
     }
     private void FixedUpdate()
@@ -208,7 +215,15 @@ public class DummyBot : MonoBehaviour
         }
         if(m_InfectionStatus == agentStatus.INFECTED)
         {
-
+            if(recoverTime <= 0)
+            {
+                m_InfectionStatus = agentStatus.RECOVERED;
+                changeAgentStatus();
+            }
+            else
+            {
+                recoverTime -= Time.deltaTime;
+            }
         }
 
     }

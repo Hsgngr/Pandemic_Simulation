@@ -17,11 +17,12 @@ public class PandemicAgent : MonoBehaviour
     public Material recoveredMaterial;
 
     [Tooltip("The exposure Collider")]
+    [HideInInspector]
     public Collider ExposureSphere;
 
     [Tooltip("The maximum possible distance for exposure to occur aka radius")]
     [HideInInspector]
-    public float exposureRadius = 8f;
+    public float exposureRadius;
 
     [Tooltip("Infection Coefficient")]
     [HideInInspector]
@@ -56,6 +57,9 @@ public class PandemicAgent : MonoBehaviour
         RECOVERED
     }
 
+    [Tooltip("Recovery time after the infection starts")]
+    public float recoverTime;
+
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
     public void changeAgentStatus()
@@ -67,12 +71,13 @@ public class PandemicAgent : MonoBehaviour
                 break;
             case agentStatus.INFECTED:
                 GetComponentInChildren<Renderer>().material = infectiousMaterial;
-                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;
                 pandemicAreaObj.GetComponent<PandemicArea>().healthyCounter--;
+                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;               
                 //Add - reward here.
                 break;
             case agentStatus.RECOVERED:
                 GetComponentInChildren<Renderer>().material = recoveredMaterial;
+                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter--;
                 pandemicAreaObj.GetComponent<PandemicArea>().recoveredCounter++;
                 break;
         }
@@ -149,7 +154,26 @@ public class PandemicAgent : MonoBehaviour
     }
     private void Awake()
     {
-        pandemicArea = FindObjectOfType<PandemicArea>();
+        //Get the PandemicArea
+        pandemicArea = GetComponentInParent<PandemicArea>();
         pandemicAreaObj = pandemicArea.gameObject;
+
+        GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
+        recoverTime = pandemicArea.recoverTime;
+    }
+    private void FixedUpdate()
+    {
+        if (m_InfectionStatus == agentStatus.INFECTED)
+        {
+            if (recoverTime <= 0)
+            {
+                m_InfectionStatus = agentStatus.RECOVERED;
+                changeAgentStatus();
+            }
+            else
+            {
+                recoverTime -= Time.fixedDeltaTime;
+            }
+        }
     }
 }
