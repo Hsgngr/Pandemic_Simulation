@@ -48,15 +48,13 @@ MonoBehaviour:
   range: 50
   dummyBot: {fileID: 2786648394365923647, guid: 1130640579d97324a8d9e3024fba3d55,
     type: 3}
-  healthyBotCount: 1
+  healthyBotCount: 10
   infectedBotCount: 1
   dummyBotList: []
   agents: []
-  exposureRadius: 10
+  exposureRadius: 8
   infectionCoeff: 100
-  healthyCounter: 0
-  infectedCounter: 0
-  recoveredCounter: 0
+  recoverTime: 100
 --- !u!1 &5125753968275364834
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,17 +289,17 @@ PrefabInstance:
     - target: {fileID: 1777005766337896641, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 49.14
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1777005766337896641, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.5299997
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1777005766337896641, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -44.81
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1777005766337896641, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}

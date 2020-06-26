@@ -25,7 +25,7 @@ public class PandemicArea : MonoBehaviour
 
 
     [Header("InfectionSettings")]
-    [Tooltip("The maximum possible distance for exposure to occur aka radius Default: 8f")]
+    [Tooltip("The maximum possible distance for exposure to occur aka radius (Default 8f)")]
     public float exposureRadius = 8f;
 
     [Tooltip("Propability of getting infected is divided byinfectionCoeff. (1 is most infectious 100 is minimum infectious)")]
