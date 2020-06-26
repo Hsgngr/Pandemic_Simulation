@@ -15,14 +15,15 @@ public class DummyBot : MonoBehaviour
     [Tooltip("The material when the bot is infected")]
     public Material infectiousMaterial;
 
-    [Tooltip("The exposure Collider")]
-    public Collider ExposureSphere;
+    [Tooltip("The material when the bot is infected")]
+    public Material recoveredMaterial;
 
     [Tooltip("The maximum possible distance for exposure to occur aka radius")]
+    [HideInInspector]
     public float exposureRadius = 8f;
 
     [Tooltip("Infection Coefficient")]
-    [Range(0f, 100f)]
+    [HideInInspector]
     public float infectionCoeff;
 
     [Tooltip("The probability of exposure at that maximum distance")]
@@ -31,6 +32,9 @@ public class DummyBot : MonoBehaviour
 
     //The PandemicArea
     private PandemicArea pandemicArea;
+
+    //The gameObject of the Pandemic Area
+    private GameObject pandemicAreaObj;
 
     // Speed of agent rotation.
     public float turnSpeed = 300;
@@ -41,9 +45,11 @@ public class DummyBot : MonoBehaviour
     //Check if agent is frozen or not;
     public bool isFrozen = false;
     //Targeted Position
+   
+    //When a target selected Distance is divided by velocity (moveSpeed) and it give nextActionTime
+    [HideInInspector]
+    public float nextActionTime = -1f;
     private Vector3 targetPosition;
-    private float nextActionTime = -1f;
-
 
 
     /// <summary>
@@ -52,7 +58,8 @@ public class DummyBot : MonoBehaviour
     public enum agentStatus
     {
         HEALTHY,
-        INFECTED
+        INFECTED,
+        RECOVERED
     }
 
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
@@ -66,7 +73,12 @@ public class DummyBot : MonoBehaviour
                 break;
             case agentStatus.INFECTED:
                 GetComponentInChildren<Renderer>().material = infectiousMaterial;
+                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;
                 //Add - reward here.
+                break;
+            case agentStatus.RECOVERED:
+                GetComponentInChildren<Renderer>().material = recoveredMaterial;
+                pandemicAreaObj.GetComponent<PandemicArea>().recoveredCounter++;               
                 break;
         }
     }
@@ -183,6 +195,7 @@ public class DummyBot : MonoBehaviour
     private void Awake()
     {
         pandemicArea = FindObjectOfType<PandemicArea>();
+        pandemicAreaObj = pandemicArea.gameObject;
         targetPosition = pandemicArea.ChooseRandomPosition();
         GetComponent<SphereCollider>().radius = exposureRadius;
 
@@ -192,6 +205,10 @@ public class DummyBot : MonoBehaviour
         if (!isFrozen)
         {
             moveRandomTarget();
+        }
+        if(m_InfectionStatus == agentStatus.INFECTED)
+        {
+
         }
 
     }

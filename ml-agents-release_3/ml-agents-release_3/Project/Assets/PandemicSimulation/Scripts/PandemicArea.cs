@@ -16,8 +16,12 @@ public class PandemicArea : MonoBehaviour
     public int healthyBotCount = 10;
     public int infectedBotCount = 1;
 
+    //List of DummyBots
+    public List<GameObject> dummyBotList = new List<GameObject>();
     [Space(10)]
+    //List of Agents
     public List<GameObject> agents = new List<GameObject>();
+
 
     [Header("InfectionSettings")]
     [Tooltip("The maximum possible distance for exposure to occur aka radius")]
@@ -27,13 +31,13 @@ public class PandemicArea : MonoBehaviour
     [Range(500f, 1f)]
     public float infectionCoeff = 50f;
 
-    //List of DummyBots
-    public List<GameObject> dummyBotList = new List<GameObject>();
+    [Tooltip("Recovery time after the infection starts")]
+    public float recoverTime = 50f;
 
-
-
-
-
+    [Header("SIR Model")]
+    public int healthyCounter;
+    public int infectedCounter = 0;
+    public int recoveredCounter = 0;
 
     /// <summary>
     /// Creates objects in random position at given amount
@@ -58,7 +62,8 @@ public class PandemicArea : MonoBehaviour
         //Add default healthy bots
         for (int i = 0; i < healthyNum; i++)
         {
-            GameObject f = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)));
+            //Instantiate the dummyBot with choosenRandom,Position and choosenRandom rotation inside of the Pandemic Area Object
+            GameObject f = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)), transform);
             f.GetComponent<SphereCollider>().radius = exposureRadius;
             f.GetComponent<DummyBot>().infectionCoeff = infectionCoeff;
             dummyBotList.Add(f);
@@ -67,7 +72,8 @@ public class PandemicArea : MonoBehaviour
         //Add default starter infected bots
         for (int i = 0; i < infectedNum; i++)
         {
-            GameObject b = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)));
+            //Instantiate the dummyBot with choosenRandom,Position and choosenRandom rotation inside of the Pandemic Area Object
+            GameObject b = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)), transform);
             b.GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
             b.GetComponent<DummyBot>().changeAgentStatus();
             b.GetComponent<SphereCollider>().radius = exposureRadius;
@@ -83,12 +89,17 @@ public class PandemicArea : MonoBehaviour
 
     public void ResetPandemicArea(List<GameObject> agents)
     {
+        //Reset infectedCounter and healthyCounter
+        infectedCounter = 0;
+        healthyCounter = healthyBotCount + agents.Count;
+
+
         foreach (GameObject agent in agents)
         {
-            Debug.Log("agent: " + agent.name);
             //Restart the status of the agent
             agent.GetComponent<PandemicAgent>().m_InfectionStatus = PandemicAgent.agentStatus.HEALTHY;
             agent.GetComponent<PandemicAgent>().changeAgentStatus();
+            agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
             //Randomly 
             agent.transform.position = ChooseRandomPosition();
             agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
@@ -107,13 +118,17 @@ public class PandemicArea : MonoBehaviour
                 if (i < healthyBotCount)
                 {
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.HEALTHY;
-                    dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();                  
+                    dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
+                    dummyBotList[i].transform.position = ChooseRandomPosition();
+                    dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
                 }
                 else
                 {
 
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
                     dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
+                    dummyBotList[i].transform.position = ChooseRandomPosition();
+                    dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
                 }
 
             }
@@ -123,12 +138,15 @@ public class PandemicArea : MonoBehaviour
 
     public void Awake()
     {
+        foreach (PandemicAgent agentSript in FindObjectsOfType<PandemicAgent>())
+        {
+            agents.Add(agentSript.gameObject);
+        }
         ResetPandemicArea(agents);
-
     }
     public void Update()
     {
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             ResetPandemicArea(agents);
         }

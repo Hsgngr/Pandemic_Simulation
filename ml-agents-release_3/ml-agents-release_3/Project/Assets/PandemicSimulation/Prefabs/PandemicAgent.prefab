@@ -407,8 +407,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthyMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   infectiousMaterial: {fileID: 2100000, guid: f1310da33885ba44a8e48ab8118aaf96, type: 2}
+  recoveredMaterial: {fileID: 2100000, guid: f86566921db89e04d817f56a5d41859c, type: 2}
   ExposureSphere: {fileID: 4469005312358716335}
   exposureRadius: 8
+  infectionCoeff: 0
   probability: 0
   turnSpeed: 300
   moveSpeed: 2
