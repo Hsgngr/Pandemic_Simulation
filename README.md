@@ -3,11 +3,12 @@ Pandemic Simulation with Reinforcement Learning
 
 ## Getting Started
 
-This is an open source pandemic simulation environment for reinforcement learning in Unity with ml-agent integration. This is a dissertation project for University of Sussex Summer Term.
+This is an open source pandemic simulation environment for reinforcement learning in Unity with ml-agent integration. This is a dissertation project for Advanced Computer Science Master in University of Sussex Summer Term.
 
 To try out the project you should
 *open the "Project" folder in Pandemic_Simulation\ml-agents-release_3\ml-agents-release_3\Project with Unity Editor.
 * Play Assets/PandemicSimulation/Scenes/T1.unity
+
 
 ### Prerequisites
 This project uses Unity-ml-agent 1.1.0 Release 3
@@ -22,23 +23,28 @@ Give examples
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
-
+To train an agent:
+*Go to the folder of training.yaml
+*Activate the environment
+*
 ```
-Give the example
-```
-
-And repeat
-
-```
-until finished
+mlagents-learn ./trainer_config.yaml --run-id first_run
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+To see the results use
 
-## Contributing
+```
+tensorboard --logdir results
+```
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+###Screenshots from the simulation:
+Simulate how infection spreads
+
+![](images/pandemic_simulation.png)
+
+States of agents: Represents the SIR Model which is used for visualizing pandemic disease.
+
+![](images/agent_states.png)
 
 ## Authors
 
