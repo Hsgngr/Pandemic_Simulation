@@ -58,7 +58,10 @@ public class FoodCollectorAgent : Agent
         var b = (byte)(hexVal & 0xFF);
         return new Color32(r, g, b, 255);
     }
-
+    /// <summary>
+    /// When Behaviour Type is set to "Heuristic Only" on the agent's Behaviour Parameter
+    /// </summary>
+    /// <param name="act"></param>
     public void MoveAgent(float[] act)
     {
         m_Shoot = false;

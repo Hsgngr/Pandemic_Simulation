@@ -52,6 +52,7 @@ public class PandemicAgent : Agent
     //Rigidbody of the agent
     private Rigidbody rb;
 
+
     //The list of n-number agents' directions and distance to this agent inside of the exposure radius.
     List<KeyValuePair<Vector3, float>> directions = new List<KeyValuePair<Vector3, float>>(); //This might be not the correct way so it may be deleted.
 
@@ -73,7 +74,9 @@ public class PandemicAgent : Agent
     }
 
     [Tooltip("Recovery time after the infection starts")]
-    public float recoverTime=50f;
+    public float recoverTime = 50f;
+
+    const int NUM_ITEM_TYPES = (int)agentStatus.RECOVERED; //The last state in the enum (returns 2)
 
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
@@ -87,7 +90,7 @@ public class PandemicAgent : Agent
             case agentStatus.INFECTED:
                 GetComponentInChildren<Renderer>().material = infectiousMaterial;
                 pandemicAreaObj.GetComponent<PandemicArea>().healthyCounter--;
-                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;               
+                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;
                 //Add - reward here.
                 break;
             case agentStatus.RECOVERED:
@@ -113,11 +116,15 @@ public class PandemicAgent : Agent
     }
     public override void CollectObservations(VectorSensor sensor)
     {
+
+        var localVelocity = transform.InverseTransformDirection(rb.velocity);
+        sensor.AddObservation(localVelocity.x);
+        sensor.AddObservation(localVelocity.z);
+        sensor.AddObservation(System.Convert.ToInt32(m_InfectionStatus));
+        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+
+        //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
         
-            var localVelocity = transform.InverseTransformDirection(rb.velocity);
-            sensor.AddObservation(localVelocity.x);
-            sensor.AddObservation(localVelocity.z);
-            sensor.AddObservation(System.Convert.ToInt32(m_InfectionStatus));                
     }
 
     /// <summary>
@@ -190,8 +197,16 @@ public class PandemicAgent : Agent
     {
         MoveAgent(vectorAction);
     }
+
+    /// <summary>
+    /// When Behaviour Type is set to  "Heuristic Only" on the agent's Behaviour Parameters,
+    /// this function will be called. Its return values will be fed into
+    /// <see cref="OnActionReceived(float[])"/> instead of using the neural network
+    /// </summary>
+    /// <param name="actionsOut"> output action array</param>
     public override void Heuristic(float[] actionsOut)
     {
+
         if (Input.GetKey(KeyCode.D))
         {
             actionsOut[2] = 2f;
@@ -208,10 +223,10 @@ public class PandemicAgent : Agent
         {
             actionsOut[0] = 2f;
         }
-        actionsOut[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
     }
 
-    private void UpdateDirectionList() { 
+    private void UpdateDirectionList()
+    {
         // I will not do this yet.
     }
 
@@ -302,7 +317,7 @@ public class PandemicAgent : Agent
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         if (m_InfectionStatus == agentStatus.INFECTED)
         {
-           // Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
+            // Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
             if (recoverTime <= 0)
             {
                 m_InfectionStatus = agentStatus.RECOVERED;
