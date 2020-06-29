@@ -327,8 +327,10 @@ GameObject:
   - component: {fileID: 1777005766337896641}
   - component: {fileID: 1777005766337896668}
   - component: {fileID: 1777005766337896671}
-  - component: {fileID: 8041505683011450719}
   - component: {fileID: 4469005312358716335}
+  - component: {fileID: 1363520318531498113}
+  - component: {fileID: 4670239124458484783}
+  - component: {fileID: -8237695576303710740}
   m_Layer: 0
   m_Name: PandemicAgent
   m_TagString: agent
@@ -380,7 +382,45 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &8041505683011450719
+--- !u!135 &4469005312358716335
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1777005766337896640}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 8
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1363520318531498113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1777005766337896640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 1
+    NumStackedVectorObservations: 1
+    VectorActionSize: 030000000300000003000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: PandemicAgent
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
+--- !u!114 &4670239124458484783
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -395,32 +435,33 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 5000
   healthyMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   infectiousMaterial: {fileID: 2100000, guid: f1310da33885ba44a8e48ab8118aaf96, type: 2}
   recoveredMaterial: {fileID: 2100000, guid: f86566921db89e04d817f56a5d41859c, type: 2}
-  ExposureSphere: {fileID: 4469005312358716335}
-  exposureRadius: 8
+  ExposureSphere: {fileID: 0}
+  exposureRadius: 0
   infectionCoeff: 0
   probability: 0
   turnSpeed: 300
   moveSpeed: 2
   isFrozen: 0
-  recoverTime: 0
+  recoverTime: 50
   m_InfectionStatus: 0
---- !u!135 &4469005312358716335
-SphereCollider:
+--- !u!114 &-8237695576303710740
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1777005766337896640}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 8
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &1777005766443381518
 GameObject:
   m_ObjectHideFlags: 0

@@ -52,6 +52,8 @@ public class PandemicAgent : Agent
     //Rigidbody of the agent
     private Rigidbody rb;
 
+    private float reward = 0;
+
 
     //The list of n-number agents' directions and distance to this agent inside of the exposure radius.
     List<KeyValuePair<Vector3, float>> directions = new List<KeyValuePair<Vector3, float>>(); //This might be not the correct way so it may be deleted.
@@ -298,6 +300,7 @@ public class PandemicAgent : Agent
             // Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
+            AddReward(-10f);
         }
     }
 
@@ -313,9 +316,15 @@ public class PandemicAgent : Agent
     //}
 
     private void FixedUpdate()
-    {
+    {   
+        if(m_InfectionStatus == agentStatus.HEALTHY)
+        {
+            reward += 0.001f;
+            //Debug.Log("reward: " + reward);
+            AddReward(0.001f);
+        }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
-        if (m_InfectionStatus == agentStatus.INFECTED)
+        else if (m_InfectionStatus == agentStatus.INFECTED)
         {
             // Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
             if (recoverTime <= 0)
@@ -328,6 +337,5 @@ public class PandemicAgent : Agent
                 recoverTime -= Time.fixedDeltaTime;
             }
         }
-        //Debug.Log("agentStatus: " + System.Convert.ToInt32(m_InfectionStatus));
     }
 }
