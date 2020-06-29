@@ -91,13 +91,13 @@ public class PandemicArea : MonoBehaviour
     }
 
 
-    public void ResetPandemicArea(List<GameObject> agents)
+    public void ResetPandemicArea()
     {
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;       
         healthyCounter = healthyBotCount + agents.Count;
 
-
+        
         foreach (GameObject agent in agents)
         {
             //Restart the status of the agent
@@ -143,17 +143,19 @@ public class PandemicArea : MonoBehaviour
 
     public void Awake()
     {
-        foreach (PandemicAgent agentSript in FindObjectsOfType<PandemicAgent>())
+        //Find child agents of this pandemicArea
+        foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
         {
             agents.Add(agentSript.gameObject);
         }
-        ResetPandemicArea(agents);
+
+        ResetPandemicArea();
     }
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ResetPandemicArea(agents);
+            ResetPandemicArea();
         }
     }
 

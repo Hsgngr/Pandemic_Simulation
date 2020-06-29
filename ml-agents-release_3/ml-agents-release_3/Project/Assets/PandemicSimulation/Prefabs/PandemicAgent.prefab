@@ -392,6 +392,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c050e089313693a43b5b036700185f4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
   healthyMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   infectiousMaterial: {fileID: 2100000, guid: f1310da33885ba44a8e48ab8118aaf96, type: 2}
   recoveredMaterial: {fileID: 2100000, guid: f86566921db89e04d817f56a5d41859c, type: 2}
@@ -402,6 +406,7 @@ MonoBehaviour:
   turnSpeed: 300
   moveSpeed: 2
   isFrozen: 0
+  recoverTime: 0
   m_InfectionStatus: 0
 --- !u!135 &4469005312358716335
 SphereCollider:

@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 /// <summary>
 /// A Pandemic Simulation Machine Learning Agent
 /// </summary>
-public class PandemicAgent : MonoBehaviour
+public class PandemicAgent : Agent
 {
     [Tooltip("The material when the agent is healthy")]
     public Material healthyMaterial;
@@ -47,6 +49,19 @@ public class PandemicAgent : MonoBehaviour
     //Check if agent is frozen or not;
     public bool isFrozen = false;
 
+    //Rigidbody of the agent
+    private Rigidbody rb;
+
+    //The list of n-number agents' directions and distance to this agent inside of the exposure radius.
+    List<KeyValuePair<Vector3, float>> directions = new List<KeyValuePair<Vector3, float>>(); //This might be not the correct way so it may be deleted.
+
+    //Starving level; 
+    private float starvingLevel = 100f; //again this will not included in MVP
+
+    //Market distance
+    private float marketDistance; //It not implemented yet.
+
+
     /// <summary>
     /// States for being healthy or infectious
     /// </summary>
@@ -58,7 +73,7 @@ public class PandemicAgent : MonoBehaviour
     }
 
     [Tooltip("Recovery time after the infection starts")]
-    public float recoverTime;
+    public float recoverTime=50f;
 
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
@@ -82,6 +97,124 @@ public class PandemicAgent : MonoBehaviour
                 break;
         }
     }
+    /// <summary>
+    /// Initialize the agent
+    /// </summary>
+    public override void Initialize()
+    {
+        rb = GetComponent<Rigidbody>();
+
+        //Get the PandemicArea and its settings
+        pandemicArea = GetComponentInParent<PandemicArea>();
+
+        pandemicAreaObj = pandemicArea.gameObject;
+        GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
+        recoverTime = pandemicArea.recoverTime;
+    }
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        
+            var localVelocity = transform.InverseTransformDirection(rb.velocity);
+            sensor.AddObservation(localVelocity.x);
+            sensor.AddObservation(localVelocity.z);
+            sensor.AddObservation(System.Convert.ToInt32(m_InfectionStatus));                
+    }
+
+    /// <summary>
+    /// Reset the agent when an episode begins
+    /// </summary>
+    public override void OnEpisodeBegin()
+    {
+        pandemicArea.ResetPandemicArea();
+
+        //Zero out velocities so that movement stops before a new episode begins
+        rb.velocity = Vector3.zero;
+    }
+    public void MoveAgent(float[] act)
+    {
+        var dirToGo = Vector3.zero;
+        var rotateDir = Vector3.zero;
+        var forwardAxis = (int)act[0];
+        var rightAxis = (int)act[1];
+        var rotateAxis = (int)act[2];
+
+        switch (forwardAxis)
+        {
+            case 1:
+                dirToGo = transform.forward;
+                break;
+            case 2:
+                dirToGo = -transform.forward;
+                break;
+        }
+
+        switch (rightAxis)
+        {
+            case 1:
+                dirToGo = transform.right;
+                break;
+            case 2:
+                dirToGo = -transform.right;
+                break;
+        }
+
+        switch (rotateAxis)
+        {
+            case 1:
+                rotateDir = -transform.up;
+                break;
+            case 2:
+                rotateDir = transform.up;
+                break;
+        }
+        rb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+        transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+
+        if (rb.velocity.sqrMagnitude > 25f) // slow it down
+        {
+            rb.velocity *= 0.95f;
+        }
+    }
+    /// <summary>
+    /// Called when an action is received from either the player input or the neural network
+    /// 
+    /// VectorAction[i] represents:
+    /// Index 0: move forward or backward
+    /// Index 1: move to right or left
+    /// Index 2: Rotate clockwise or counterclockwise
+    /// 
+    /// To see these actions look at the MoveAgent
+    /// </summary>
+    /// <param name="vectorAction">The actions to take</param>
+    public override void OnActionReceived(float[] vectorAction)
+    {
+        MoveAgent(vectorAction);
+    }
+    public override void Heuristic(float[] actionsOut)
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            actionsOut[2] = 2f;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            actionsOut[0] = 1f;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            actionsOut[2] = 1f;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            actionsOut[0] = 2f;
+        }
+        actionsOut[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+    }
+
+    private void UpdateDirectionList() { 
+        // I will not do this yet.
+    }
+
     /// <summary>
     /// Called when the agent's collider enters a trigger collider
     /// </summary>
@@ -152,19 +285,24 @@ public class PandemicAgent : MonoBehaviour
             changeAgentStatus();
         }
     }
-    private void Awake()
-    {
-        //Get the PandemicArea
-        pandemicArea = GetComponentInParent<PandemicArea>();
-        pandemicAreaObj = pandemicArea.gameObject;
 
-        GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
-        recoverTime = pandemicArea.recoverTime;
-    }
+    //Moved to public override void Initialize()
+    //private void Awake()
+    //{
+    //    //Get the PandemicArea
+    //    pandemicArea = GetComponentInParent<PandemicArea>();
+    //    pandemicAreaObj = pandemicArea.gameObject;
+
+    //    GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
+    //    recoverTime = pandemicArea.recoverTime;
+    //}
+
     private void FixedUpdate()
     {
+        //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         if (m_InfectionStatus == agentStatus.INFECTED)
         {
+           // Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
             if (recoverTime <= 0)
             {
                 m_InfectionStatus = agentStatus.RECOVERED;
@@ -175,5 +313,6 @@ public class PandemicAgent : MonoBehaviour
                 recoverTime -= Time.fixedDeltaTime;
             }
         }
+        //Debug.Log("agentStatus: " + System.Convert.ToInt32(m_InfectionStatus));
     }
 }

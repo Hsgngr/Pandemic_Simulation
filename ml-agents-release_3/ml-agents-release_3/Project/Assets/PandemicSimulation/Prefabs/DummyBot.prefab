@@ -242,7 +242,6 @@ MonoBehaviour:
   healthyMaterial: {fileID: 2100000, guid: 020be4051a430194ea533f27d04f2c22, type: 2}
   infectiousMaterial: {fileID: 2100000, guid: f1310da33885ba44a8e48ab8118aaf96, type: 2}
   recoveredMaterial: {fileID: 2100000, guid: f86566921db89e04d817f56a5d41859c, type: 2}
-  ExposureSphere: {fileID: 1208631888}
   exposureRadius: 8
   infectionCoeff: 0
   probability: 0
@@ -250,6 +249,7 @@ MonoBehaviour:
   moveSpeed: 10
   isFrozen: 0
   nextActionTime: -1
+  recoverTime: 0
   m_InfectionStatus: 0
 --- !u!135 &1208631888
 SphereCollider:
