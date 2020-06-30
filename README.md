@@ -79,9 +79,10 @@ This project is inspired from followings:
 * [Corona Simulator](https://www.washingtonpost.com/graphics/2020/world/corona-simulator/)
 * [Simulating an epidemic](https://www.youtube.com/watch?v=gxAaO2rsdIs)
 
-#### Reinforcement Learning Related
+#### Unity Ml Agents Related
 * [Unity ML Agents Penguins Tutorial](https://connect.unity.com/p/ml-agents-penguins-unity-learn)
 * [Unity ML Agents Hummingbirds Tutorial](https://learn.unity.com/course/ml-agents-hummingbirds?uv=2019.3)
 
+#### Reinforcement Learning Related
 
 
