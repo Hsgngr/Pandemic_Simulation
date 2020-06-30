@@ -1,9 +1,9 @@
-# Pandemic_Simulation
+# Pandemic Simulation
 Pandemic Simulation with Reinforcement Learning 
 
 ## Getting Started
 
-This is an open source pandemic simulation environment for reinforcement learning in Unity with ml-agent integration. This is a dissertation project for Advanced Computer Science Master in University of Sussex Summer Term.
+This is an open source pandemic simulation environment for reinforcement learning created with Unity ml-agents. This is a dissertation project for Advanced Computer Science Master in University of Sussex.
 
 To try out the project you should
 *open the "Project" folder in Pandemic_Simulation\ml-agents-release_3\ml-agents-release_3\Project with Unity Editor.
@@ -37,8 +37,8 @@ To see the results use
 tensorboard --logdir results
 ```
 
-###Screenshots from the simulation:
-Simulate how infection spreads
+### Screenshots from the simulation:
+Simulating how infection spreads
 
 ![](images/pandemic_simulation.png)
 
@@ -52,20 +52,18 @@ States of agents: Represents the SIR Model which is used for visualizing pandemi
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-* Inspiration
-This project is inspired from followings:
-###Coronavirus Related
-*https://www.washingtonpost.com/graphics/2020/world/corona-simulator/
-*https://www.youtube.com/watch?v=gxAaO2rsdIs
 
-###Reinforcement Learning Related
-*https://connect.unity.com/p/ml-agents-penguins-unity-learn
-*https://learn.unity.com/course/ml-agents-hummingbirds?uv=2019.3
+### Inspiration
+This project is inspired from followings:
+#### Coronavirus Related
+* https://www.washingtonpost.com/graphics/2020/world/corona-simulator/
+* https://www.youtube.com/watch?v=gxAaO2rsdIs
+
+#### Reinforcement Learning Related
+* https://connect.unity.com/p/ml-agents-penguins-unity-learn
+* https://learn.unity.com/course/ml-agents-hummingbirds?uv=2019.3
 
 
 
