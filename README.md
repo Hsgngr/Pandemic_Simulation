@@ -55,7 +55,7 @@ tensorboard --logdir results
 ```
 This will open a localhost where you can see all the graphs that ml-agents provide to you
 
-### Screenshots from the simulation:
+## Screenshots from the simulation:
 Simulating how infection spreads
 
 ![](images/pandemic_simulation.png)
