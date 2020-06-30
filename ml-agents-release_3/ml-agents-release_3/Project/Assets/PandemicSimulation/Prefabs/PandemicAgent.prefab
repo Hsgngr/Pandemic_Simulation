@@ -346,7 +346,7 @@ GameObject:
   - component: {fileID: -8237695576303710740}
   - component: {fileID: -7988557576766746473}
   - component: {fileID: 1426552361998065325}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PandemicAgent
   m_TagString: agent
   m_Icon: {fileID: 0}
@@ -478,16 +478,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - CubeCollider
   - wall
-  - dummyBot
+  - CubeCollider
   m_RaysPerDirection: 8
   m_MaxRayDegrees: 100
   m_SphereCastRadius: 0.5
   m_RayLength: 50
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 51
   m_ObservationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
