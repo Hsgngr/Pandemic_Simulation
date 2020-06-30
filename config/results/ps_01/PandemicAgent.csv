@@ -1,0 +1,2 @@
+Steps,Policy/Entropy,Policy/Extrinsic Value Estimate,TotalScore,Environment/Episode Length,Environment/Cumulative Reward,Policy/Extrinsic Reward,Is Training
+10000,3.2956991,-0.051268857,0.0,1999.0,-8.829249754548073,-8.829249754548073,1.0
