@@ -94,10 +94,10 @@ public class PandemicArea : MonoBehaviour
     public void ResetPandemicArea()
     {
         //Reset infectedCounter and healthyCounter
-        infectedCounter = 0;       
+        infectedCounter = 0;
         healthyCounter = healthyBotCount + agents.Count;
 
-        
+
         foreach (GameObject agent in agents)
         {
             //Restart the status of the agent
@@ -128,7 +128,7 @@ public class PandemicArea : MonoBehaviour
                     dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
                 }
                 else
-                {                 
+                {
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
                     dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
                     dummyBotList[i].transform.position = ChooseRandomPosition();

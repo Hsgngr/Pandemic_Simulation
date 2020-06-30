@@ -30,6 +30,7 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - dummyBot
+  - CubeCollider
   layers:
   - Default
   - TransparentFX

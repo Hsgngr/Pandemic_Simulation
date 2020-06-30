@@ -54,7 +54,6 @@ public class PandemicAgent : Agent
 
     private float reward = 0;
 
-
     //The list of n-number agents' directions and distance to this agent inside of the exposure radius.
     List<KeyValuePair<Vector3, float>> directions = new List<KeyValuePair<Vector3, float>>(); //This might be not the correct way so it may be deleted.
 
@@ -64,7 +63,8 @@ public class PandemicAgent : Agent
     //Market distance
     private float marketDistance; //It not implemented yet.
 
-
+    [Tooltip("Recovery time after the infection starts")]
+    public float recoverTime = 50f;
     /// <summary>
     /// States for being healthy or infectious
     /// </summary>
@@ -75,13 +75,15 @@ public class PandemicAgent : Agent
         RECOVERED
     }
 
-    [Tooltip("Recovery time after the infection starts")]
-    public float recoverTime = 50f;
-
     const int NUM_ITEM_TYPES = (int)agentStatus.RECOVERED; //The last state in the enum (returns 2)
 
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
+    /// <summary>
+    /// When agentStatus changes call this function. 
+    /// There may be a better way to do this which combines set status and 
+    /// call this function automatically but for now its like this.
+    /// </summary>
     public void changeAgentStatus()
     {
         switch (m_InfectionStatus)
@@ -111,9 +113,10 @@ public class PandemicAgent : Agent
 
         //Get the PandemicArea and its settings
         pandemicArea = GetComponentInParent<PandemicArea>();
-
         pandemicAreaObj = pandemicArea.gameObject;
-        GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
+
+        exposureRadius = pandemicArea.exposureRadius;
+        GetComponent<SphereCollider>().radius = exposureRadius;
         recoverTime = pandemicArea.recoverTime;
     }
     public override void CollectObservations(VectorSensor sensor)
@@ -126,7 +129,6 @@ public class PandemicAgent : Agent
         sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
 
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
-        
     }
 
     /// <summary>
@@ -139,6 +141,54 @@ public class PandemicAgent : Agent
         //Zero out velocities so that movement stops before a new episode begins
         rb.velocity = Vector3.zero;
     }
+
+    /// <summary>
+    /// Called when an action is received from either the player input or the neural network
+    /// 
+    /// VectorAction[i] represents:
+    /// Index 0: move forward or backward
+    /// Index 1: move to right or left
+    /// Index 2: Rotate clockwise or counterclockwise
+    /// 
+    /// To see these actions look at the MoveAgent
+    /// </summary>
+    /// <param name="vectorAction">The actions to take</param>
+    public override void OnActionReceived(float[] vectorAction)
+    {
+        MoveAgent(vectorAction);
+    }
+
+    /// <summary>
+    /// When Behaviour Type is set to  "Heuristic Only" on the agent's Behaviour Parameters,
+    /// this function will be called. Its return values will be fed into
+    /// <see cref="OnActionReceived(float[])"/> instead of using the neural network
+    /// </summary>
+    /// <param name="actionsOut"> output action array</param>
+    public override void Heuristic(float[] actionsOut)
+    {
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            actionsOut[2] = 2f;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            actionsOut[0] = 1f;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            actionsOut[2] = 1f;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            actionsOut[0] = 2f;
+        }
+    }
+    /// <summary>
+    /// moves the agent
+    /// </summary>
+    /// <param name="act">there is 3 type of action which are forward-backward,
+    /// left-right and rotate</param>
     public void MoveAgent(float[] act)
     {
         var dirToGo = Vector3.zero;
@@ -182,48 +232,6 @@ public class PandemicAgent : Agent
         if (rb.velocity.sqrMagnitude > 25f) // slow it down
         {
             rb.velocity *= 0.95f;
-        }
-    }
-    /// <summary>
-    /// Called when an action is received from either the player input or the neural network
-    /// 
-    /// VectorAction[i] represents:
-    /// Index 0: move forward or backward
-    /// Index 1: move to right or left
-    /// Index 2: Rotate clockwise or counterclockwise
-    /// 
-    /// To see these actions look at the MoveAgent
-    /// </summary>
-    /// <param name="vectorAction">The actions to take</param>
-    public override void OnActionReceived(float[] vectorAction)
-    {
-        MoveAgent(vectorAction);
-    }
-
-    /// <summary>
-    /// When Behaviour Type is set to  "Heuristic Only" on the agent's Behaviour Parameters,
-    /// this function will be called. Its return values will be fed into
-    /// <see cref="OnActionReceived(float[])"/> instead of using the neural network
-    /// </summary>
-    /// <param name="actionsOut"> output action array</param>
-    public override void Heuristic(float[] actionsOut)
-    {
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            actionsOut[2] = 2f;
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            actionsOut[0] = 1f;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            actionsOut[2] = 1f;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            actionsOut[0] = 2f;
         }
     }
 
@@ -289,15 +297,19 @@ public class PandemicAgent : Agent
     /// <param name="infector">The agent who is inside of the collider</param>
     private void exposeInfection(GameObject infector)
     {
+
         //Distance between two agents
         float distance = Vector3.Distance(infector.transform.position, transform.position);
         probability = Mathf.InverseLerp(exposureRadius, 0, distance) / infectionCoeff;
 
+        //Debug.Log("exposureRadius: " + exposureRadius);
+        //Debug.Log("Distance: " + distance);
+        //Debug.Log("InfectionCoeff : " + infectionCoeff);
         //Debug.Log("Probability of getting infected is: " + probability);
 
         if (Random.Range(0f, 1f) < probability)
         {
-            // Debug.Log("You got infected");
+            //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
             AddReward(-10f);
@@ -305,19 +317,20 @@ public class PandemicAgent : Agent
     }
 
     //Moved to public override void Initialize()
-    //private void Awake()
-    //{
-    //    //Get the PandemicArea
-    //    pandemicArea = GetComponentInParent<PandemicArea>();
-    //    pandemicAreaObj = pandemicArea.gameObject;
+    private void Awake()
+    {
+        ////Get the PandemicArea
+        //pandemicArea = GetComponentInParent<PandemicArea>();
+        //pandemicAreaObj = pandemicArea.gameObject;
 
-    //    GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
-    //    recoverTime = pandemicArea.recoverTime;
-    //}
+        //GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
+        //recoverTime = pandemicArea.recoverTime;
+        Initialize();
+    }
 
     private void FixedUpdate()
-    {   
-        if(m_InfectionStatus == agentStatus.HEALTHY)
+    {
+        if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             reward += 0.001f;
             //Debug.Log("reward: " + reward);
