@@ -104,6 +104,7 @@ public class PandemicArea : MonoBehaviour
             agent.GetComponent<PandemicAgent>().m_InfectionStatus = PandemicAgent.agentStatus.HEALTHY;
             agent.GetComponent<PandemicAgent>().changeAgentStatus();
             agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
+            agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
             //Randomly 
             agent.transform.position = ChooseRandomPosition();
             agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
