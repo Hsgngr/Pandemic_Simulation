@@ -21,10 +21,11 @@ Tensorflow 2.2.0
 A step by step series of examples that tell you how to get a development env running
 
 To train an agent:
-*Go to the folder of training.yaml
-*Activate the environment
-*
-### Starting Training: 
+* Go to the folder of trainer_config.yaml
+* Activate the environment
+* Start Training
+
+### Training: 
 
 `mlagents-learn` is the main training utility provided by the ML-Agents Toolkit.
 It accepts a number of CLI options in addition to a YAML configuration file that
