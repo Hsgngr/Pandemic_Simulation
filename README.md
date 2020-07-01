@@ -21,10 +21,11 @@ Tensorflow 2.2.0
 A step by step series of examples that tell you how to get a development env running
 
 To train an agent:
-*Go to the folder of training.yaml
-*Activate the environment
-*
-### Starting Training: 
+* Go to the folder of trainer_config.yaml
+* Activate the environment
+* Start Training
+
+### Training: 
 
 `mlagents-learn` is the main training utility provided by the ML-Agents Toolkit.
 It accepts a number of CLI options in addition to a YAML configuration file that
@@ -84,5 +85,5 @@ This project is inspired from followings:
 * [Unity ML Agents Hummingbirds Tutorial](https://learn.unity.com/course/ml-agents-hummingbirds?uv=2019.3)
 
 #### Reinforcement Learning Related
-
+* [Emergent Tool Use From Multi-Agent Autocurricula](https://arxiv.org/abs/1909.07528)
 
