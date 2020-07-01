@@ -127,7 +127,7 @@ public class PandemicAgent : Agent
         sensor.AddObservation(localVelocity.z);
         sensor.AddObservation(System.Convert.ToInt32(m_InfectionStatus));
         sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
-
+        //6 Observations
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
     }
 

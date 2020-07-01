@@ -36,11 +36,11 @@ public class PandemicArea : MonoBehaviour
     public float recoverTime = 50f;
 
     [Header("SIR Model")]
-    [System.NonSerialized]
+    //[System.NonSerialized]
     public int healthyCounter;
-    [System.NonSerialized]
+    //[System.NonSerialized]
     public int infectedCounter = 0;
-    [System.NonSerialized]
+    //[System.NonSerialized]
     public int recoveredCounter = 0;
 
     /// <summary>
@@ -95,8 +95,7 @@ public class PandemicArea : MonoBehaviour
     {
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
-        healthyCounter = healthyBotCount + agents.Count;
-
+        healthyCounter = healthyBotCount + agents.Count +infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
 
         foreach (GameObject agent in agents)
         {
