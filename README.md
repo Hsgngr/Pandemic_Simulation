@@ -85,5 +85,5 @@ This project is inspired from followings:
 * [Unity ML Agents Hummingbirds Tutorial](https://learn.unity.com/course/ml-agents-hummingbirds?uv=2019.3)
 
 #### Reinforcement Learning Related
-
+* [Emergent Tool Use From Multi-Agent Autocurricula](https://arxiv.org/abs/1909.07528)
 
