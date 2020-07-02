@@ -410,12 +410,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 6
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 030000000300000003000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 5022602860645237092, guid: 8c61db23af90170488cbd2b37a186dfd, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: ee2847f7aa9ee5f4e97808f781e94a2b, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: PandemicAgent
@@ -480,8 +480,8 @@ MonoBehaviour:
   m_DetectableTags:
   - wall
   - CubeCollider
-  m_RaysPerDirection: 8
-  m_MaxRayDegrees: 100
+  m_RaysPerDirection: 10
+  m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
   m_RayLength: 50
   m_RayLayerMask:

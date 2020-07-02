@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class SIR : MonoBehaviour
 {
-    public Text text;
-    public PandemicArea pandemicArea;
+    private Text text;
+    private PandemicArea pandemicArea;
     
     // Start is called before the first frame update
     void Start()
     {
-        pandemicArea = FindObjectOfType<PandemicArea>();
+        pandemicArea = GetComponentInParent<PandemicArea>();
         text = GetComponent<Text>();
     }
 
