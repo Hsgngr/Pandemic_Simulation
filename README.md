@@ -59,6 +59,10 @@ This will open a localhost where you can see all the graphs that ml-agents provi
 ## Screenshots from the simulation:
 Simulating how infection spreads
 
+<p align="center">
+<img src="images/sim.gif" width="50%">
+</p>
+
 ![](images/pandemic_simulation.png)
 
 States of agents: Represents the SIR Model which is used for visualizing pandemic disease.
