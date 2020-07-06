@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 
 /// <summary>
@@ -45,13 +46,25 @@ public class DummyBot : MonoBehaviour
     //Check if agent is frozen or not;
     public bool isFrozen = false;
     //Targeted Position
-   
+
     //When a target selected Distance is divided by velocity (moveSpeed) and it give nextActionTime
     [HideInInspector]
     public float nextActionTime = -1f;
     private Vector3 targetPosition;
 
+    Rigidbody rb;
 
+    private Vector3 initialVelocity;
+
+    /// <summary>
+    /// The movement type of the bot
+    /// </summary>
+    public enum MovementType
+    {
+        BOUNCY,
+        RANDOMTARGET
+    }
+    public MovementType m_MoveType = MovementType.RANDOMTARGET;
     /// <summary>
     /// States for being healthy or infectious
     /// </summary>
@@ -82,7 +95,7 @@ public class DummyBot : MonoBehaviour
             case agentStatus.RECOVERED:
                 GetComponentInChildren<Renderer>().material = recoveredMaterial;
                 pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter--;
-                pandemicAreaObj.GetComponent<PandemicArea>().recoveredCounter++;               
+                pandemicAreaObj.GetComponent<PandemicArea>().recoveredCounter++;
                 break;
         }
     }
@@ -123,7 +136,25 @@ public class DummyBot : MonoBehaviour
             }
         }
     }
+    private void Bounce(Vector3 collisionNormal)
+    {
+        var tweak = new Vector3(Random.Range(0, 1f), 0, Random.Range(0, 1f));
+        var direction = Vector3.Reflect((initialVelocity + tweak).normalized, collisionNormal);
+        initialVelocity = direction;
+    }
+    private void moveBouncy()
+    {
+        transform.position  += initialVelocity.normalized/2 * moveSpeed/10;
+       // transform.position = new Vector3(Mathf.Clamp(transform.localPosition.x,-50, 50), transform.position.y, Mathf.Clamp(transform.localPosition.z, -50, 50));
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (m_MoveType == MovementType.BOUNCY)
+        {
+            Bounce(collision.contacts[0].normal);
+        }
 
+    }
 
     /// <summary>
     /// Called when the agent's collider enters a trigger collider
@@ -149,11 +180,11 @@ public class DummyBot : MonoBehaviour
     /// <param name="collider">The trigger collider</param>
     private void TriggerEnterOrStay(Collider collider)
     {
-        
+
         //Check if our agent is healthy, otherwise there is nothing like reinfection
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
-           
+
             //Check if its a dummyBot   
             if (collider.CompareTag("dummyBot"))
             {
@@ -206,16 +237,36 @@ public class DummyBot : MonoBehaviour
         GetComponent<SphereCollider>().radius = exposureRadius;
         recoverTime = pandemicArea.recoverTime;
 
+        rb = GetComponent<Rigidbody>();
+        initialVelocity = new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
+        //Debug.Log("initial Vel:" + initialVelocity);
+
+        if(m_MoveType == MovementType.BOUNCY)
+        {
+          //  rb.velocity = initialVelocity;
+        }
+        
+
     }
     private void FixedUpdate()
     {
         if (!isFrozen)
         {
-            moveRandomTarget();
+            //Debug.Log("movement type : " + m_MoveType);
+            if (m_MoveType == MovementType.RANDOMTARGET)
+            {
+                
+                moveRandomTarget();
+            }
+            else if (m_MoveType == MovementType.BOUNCY)
+            {
+                moveBouncy();
+            }
+
         }
-        if(m_InfectionStatus == agentStatus.INFECTED)
+        if (m_InfectionStatus == agentStatus.INFECTED)
         {
-            if(recoverTime <= 0)
+            if (recoverTime <= 0)
             {
                 m_InfectionStatus = agentStatus.RECOVERED;
                 changeAgentStatus();

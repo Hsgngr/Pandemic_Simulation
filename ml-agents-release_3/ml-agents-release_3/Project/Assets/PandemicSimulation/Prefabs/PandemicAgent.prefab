@@ -345,7 +345,6 @@ GameObject:
   - component: {fileID: 4670239124458484783}
   - component: {fileID: -8237695576303710740}
   - component: {fileID: -7988557576766746473}
-  - component: {fileID: 1426552361998065325}
   m_Layer: 9
   m_Name: PandemicAgent
   m_TagString: agent
@@ -492,31 +491,6 @@ MonoBehaviour:
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
   m_EndVerticalOffset: 0
---- !u!114 &1426552361998065325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1777005766337896640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_BrainParameters:
-    VectorObservationSize: 5
-    NumStackedVectorObservations: 1
-    VectorActionSize: 030000000300000003000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: PandemicAgent
-  TeamId: 0
-  m_UseChildSensors: 1
-  m_ObservableAttributeHandling: 0
 --- !u!1 &1777005766443381518
 GameObject:
   m_ObjectHideFlags: 0

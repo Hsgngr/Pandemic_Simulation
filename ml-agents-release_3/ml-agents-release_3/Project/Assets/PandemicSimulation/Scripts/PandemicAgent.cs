@@ -165,22 +165,17 @@ public class PandemicAgent : Agent
     /// <param name="actionsOut"> output action array</param>
     public override void Heuristic(float[] actionsOut)
     {
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            actionsOut[2] = 2f;
-        }
         if (Input.GetKey(KeyCode.W))
         {
             actionsOut[0] = 1f;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            actionsOut[2] = 1f;
-        }
+        }       
         if (Input.GetKey(KeyCode.S))
         {
             actionsOut[0] = 2f;
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            actionsOut[0] = 0f;
         }
     }
     /// <summary>
@@ -192,32 +187,16 @@ public class PandemicAgent : Agent
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
-        var forwardAxis = (int)act[0];
-        var rightAxis = (int)act[1];
-        var rotateAxis = (int)act[2];
+        
+        var rotateAxis = (int)act[0];
 
-        switch (forwardAxis)
-        {
-            case 1:
-                dirToGo = transform.forward;
-                break;
-            case 2:
-                dirToGo = -transform.forward;
-                break;
-        }
-
-        switch (rightAxis)
-        {
-            case 1:
-                dirToGo = transform.right;
-                break;
-            case 2:
-                dirToGo = -transform.right;
-                break;
-        }
+        dirToGo = transform.forward;
 
         switch (rotateAxis)
         {
+            case 0:
+                rotateDir = Vector3.zero;
+                break;
             case 1:
                 rotateDir = -transform.up;
                 break;
