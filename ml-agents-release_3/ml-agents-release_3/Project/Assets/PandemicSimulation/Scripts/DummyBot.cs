@@ -145,7 +145,6 @@ public class DummyBot : MonoBehaviour
     private void moveBouncy()
     {
         transform.position  += initialVelocity.normalized/2 * moveSpeed/10;
-       // transform.position = new Vector3(Mathf.Clamp(transform.localPosition.x,-50, 50), transform.position.y, Mathf.Clamp(transform.localPosition.z, -50, 50));
     }
     private void OnCollisionEnter(Collision collision)
     {

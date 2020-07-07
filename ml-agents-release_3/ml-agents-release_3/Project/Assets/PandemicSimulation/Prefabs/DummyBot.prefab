@@ -245,10 +245,10 @@ MonoBehaviour:
   infectionCoeff: 0
   probability: 0
   turnSpeed: 300
-  moveSpeed: 3
+  moveSpeed: 8
   isFrozen: 0
   nextActionTime: -1
-  m_MoveType: 0
+  m_MoveType: 1
   recoverTime: 0
   m_InfectionStatus: 0
 --- !u!135 &1208631888

@@ -52,11 +52,7 @@ public class PandemicAgent : Agent
     //Rigidbody of the agent
     private Rigidbody rb;
 
-    private float reward = 0;
-
-    //The list of n-number agents' directions and distance to this agent inside of the exposure radius.
-    List<KeyValuePair<Vector3, float>> directions = new List<KeyValuePair<Vector3, float>>(); //This might be not the correct way so it may be deleted.
-
+    private Vector3 rewardDistance;
     //Starving level; 
     private float starvingLevel = 100f; //again this will not included in MVP
 
@@ -121,12 +117,15 @@ public class PandemicAgent : Agent
     }
     public override void CollectObservations(VectorSensor sensor)
     {
-
+        float distance = Vector3.Distance(transform.position, pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position);
+        Vector3 direction = transform.position - pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position;
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
-        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
-
+        //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+        sensor.AddObservation(distance);
+        sensor.AddObservation(direction.normalized);
+        
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
     }
 
@@ -168,7 +167,7 @@ public class PandemicAgent : Agent
         if (Input.GetKey(KeyCode.W))
         {
             actionsOut[0] = 1f;
-        }       
+        }
         if (Input.GetKey(KeyCode.S))
         {
             actionsOut[0] = 2f;
@@ -187,7 +186,7 @@ public class PandemicAgent : Agent
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
-        
+
         var rotateAxis = (int)act[0];
 
         dirToGo = transform.forward;
@@ -213,9 +212,14 @@ public class PandemicAgent : Agent
         }
     }
 
-    private void UpdateDirectionList()
+    private void OnCollisionEnter(Collision collision)
     {
-        // I will not do this yet.
+        if (collision.gameObject.CompareTag("target"))
+        {
+            AddReward(1f);
+            collision.gameObject.transform.position = pandemicArea.ChooseRandomPosition();
+        }
+
     }
 
     /// <summary>
@@ -246,7 +250,6 @@ public class PandemicAgent : Agent
         //Check if our agent is healthy, otherwise there is nothing like reinfection
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
-
             //Check if its a dummyBot   
             if (collider.CompareTag("dummyBot"))
             {
@@ -290,8 +293,8 @@ public class PandemicAgent : Agent
             //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
-            AddReward(-10f);
-            EndEpisode();
+            AddReward(-5f);
+            //EndEpisode();
         }
     }
 
@@ -311,9 +314,8 @@ public class PandemicAgent : Agent
     {
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
-            reward += 0.001f;
             //Debug.Log("reward: " + reward);
-            AddReward(0.001f);
+            AddReward(-0.001f);
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)

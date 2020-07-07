@@ -43,6 +43,9 @@ public class PandemicArea : MonoBehaviour
     //[System.NonSerialized]
     public int recoveredCounter = 0;
 
+    //reward cube
+    public GameObject rewardCube;
+
     /// <summary>
     /// Creates objects in random position at given amount
     /// </summary>
@@ -93,10 +96,11 @@ public class PandemicArea : MonoBehaviour
 
     public void ResetPandemicArea()
     {
+        rewardCube.transform.position = ChooseRandomPosition();
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
         healthyCounter = healthyBotCount + agents.Count +infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
-
+        
         foreach (GameObject agent in agents)
         {
             //Restart the status of the agent
@@ -138,7 +142,7 @@ public class PandemicArea : MonoBehaviour
 
             }
         }
-
+        
     }
 
     public void Awake()
