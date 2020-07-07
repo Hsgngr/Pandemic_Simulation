@@ -122,7 +122,7 @@ public class PandemicAgent : Agent
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
-        //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
         sensor.AddObservation(distance);
         sensor.AddObservation(direction.normalized);
         
@@ -164,11 +164,11 @@ public class PandemicAgent : Agent
     /// <param name="actionsOut"> output action array</param>
     public override void Heuristic(float[] actionsOut)
     {
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.A))
         {
             actionsOut[0] = 1f;
         }
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.D))
         {
             actionsOut[0] = 2f;
         }
@@ -254,7 +254,7 @@ public class PandemicAgent : Agent
             if (collider.CompareTag("dummyBot"))
             {
                 //If it is infected 
-                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED)
+                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED && collider.gameObject.GetComponent<DummyBot>().isFrozen== false)
                 {
                     exposeInfection(collider.gameObject);
                 }
@@ -294,7 +294,7 @@ public class PandemicAgent : Agent
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
             AddReward(-5f);
-            //EndEpisode();
+            EndEpisode();
         }
     }
 
@@ -312,10 +312,11 @@ public class PandemicAgent : Agent
 
     private void FixedUpdate()
     {
+        //AddReward(-0.001f);
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             //Debug.Log("reward: " + reward);
-            AddReward(-0.001f);
+            
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)

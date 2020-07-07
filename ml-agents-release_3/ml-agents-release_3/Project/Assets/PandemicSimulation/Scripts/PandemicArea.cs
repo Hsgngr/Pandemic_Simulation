@@ -99,8 +99,8 @@ public class PandemicArea : MonoBehaviour
         rewardCube.transform.position = ChooseRandomPosition();
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
-        healthyCounter = healthyBotCount + agents.Count +infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
-        
+        healthyCounter = healthyBotCount + agents.Count + infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
+
         foreach (GameObject agent in agents)
         {
             //Restart the status of the agent
@@ -122,27 +122,24 @@ public class PandemicArea : MonoBehaviour
             //Reset every dummyBot in the list
             for (int i = 0; i < dummyBotList.Count; i++)
             {
-
+                dummyBotList[i].transform.position = ChooseRandomPosition();
+                dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
+                dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
+                dummyBotList[i].GetComponent<DummyBot>().StartCoroutine(dummyBotList[i].GetComponent<DummyBot>().WaitAtStart(1f)); //Frezee bots at the start of the episode.
                 if (i < healthyBotCount)
                 {
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.HEALTHY;
-                    dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
-                    dummyBotList[i].transform.position = ChooseRandomPosition();
-                    dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
-                    dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
+
                 }
                 else
                 {
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
-                    dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
-                    dummyBotList[i].transform.position = ChooseRandomPosition();
-                    dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
-                    dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
-                }
 
+                }
+                dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
             }
         }
-        
+
     }
 
     public void Awake()

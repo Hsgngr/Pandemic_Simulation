@@ -45,6 +45,7 @@ public class DummyBot : MonoBehaviour
 
     //Check if agent is frozen or not;
     public bool isFrozen = false;
+
     //Targeted Position
 
     //When a target selected Distance is divided by velocity (moveSpeed) and it give nextActionTime
@@ -52,10 +53,14 @@ public class DummyBot : MonoBehaviour
     public float nextActionTime = -1f;
     private Vector3 targetPosition;
 
+    //Rigidbody component of the bot
     Rigidbody rb;
 
+    //For bouncy movement
     private Vector3 initialVelocity;
 
+    //For waitin at start
+    public IEnumerator coroutine;
     /// <summary>
     /// The movement type of the bot
     /// </summary>
@@ -142,9 +147,12 @@ public class DummyBot : MonoBehaviour
         var direction = Vector3.Reflect((initialVelocity + tweak).normalized, collisionNormal);
         initialVelocity = direction;
     }
+    /// <summary>
+    /// Move Bouncy is a type of movement. Instead of choosing a target, cubes bounces from the walls.
+    /// </summary>
     private void moveBouncy()
     {
-        transform.position  += initialVelocity.normalized/2 * moveSpeed/10;
+        transform.position += initialVelocity.normalized / 2 * moveSpeed / 10;
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -152,7 +160,6 @@ public class DummyBot : MonoBehaviour
         {
             Bounce(collision.contacts[0].normal);
         }
-
     }
 
     /// <summary>
@@ -225,6 +232,18 @@ public class DummyBot : MonoBehaviour
             changeAgentStatus();
         }
     }
+    /// <summary>
+    /// Wait at the beginning of the episodes. This helps to avoid infect agents instantly when they instantiate next to an infected bot.
+    /// </summary>
+    /// <param name="waitTime"></param>
+    /// <returns></returns>
+    public IEnumerator WaitAtStart(float waitTime)
+    {
+            isFrozen = true;
+            yield return new WaitForSeconds(waitTime);
+            isFrozen = false;
+        
+    }
 
     private void Awake()
     {
@@ -238,14 +257,9 @@ public class DummyBot : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
         initialVelocity = new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
-        //Debug.Log("initial Vel:" + initialVelocity);
 
-        if(m_MoveType == MovementType.BOUNCY)
-        {
-          //  rb.velocity = initialVelocity;
-        }
-        
-
+        coroutine = WaitAtStart(1.0f);
+        //StartCoroutine(coroutine);
     }
     private void FixedUpdate()
     {
@@ -254,7 +268,7 @@ public class DummyBot : MonoBehaviour
             //Debug.Log("movement type : " + m_MoveType);
             if (m_MoveType == MovementType.RANDOMTARGET)
             {
-                
+
                 moveRandomTarget();
             }
             else if (m_MoveType == MovementType.BOUNCY)
