@@ -1,6 +1,8 @@
 # Pandemic Simulation
 Pandemic Simulation with Reinforcement Learning 
 
+![](images/pandemic_simulation.png)
+
 ## Getting Started
 
 This is an open source pandemic simulation environment for reinforcement learning created with Unity ml-agents. This is a dissertation project for Advanced Computer Science Master in University of Sussex.
@@ -63,7 +65,7 @@ Simulating how infection spreads
 <img src="images/sim.gif">
 </p>
 
-![](images/pandemic_simulation.png)
+
 
 States of agents: Represents the SIR Model which is used for visualizing pandemic disease.
 
