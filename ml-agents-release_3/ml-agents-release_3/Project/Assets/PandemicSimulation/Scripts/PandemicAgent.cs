@@ -53,8 +53,9 @@ public class PandemicAgent : Agent
     private Rigidbody rb;
 
     private Vector3 rewardDistance;
-    //Starving level; 
-    private float starvingLevel = 100f; //again this will not included in MVP
+    //Starving level;
+    [Range(0f, 100f)]
+    public float starvingLevel = 100f; //again this will not included in MVP
 
     //Market distance
     private float marketDistance; //It not implemented yet.
@@ -120,6 +121,8 @@ public class PandemicAgent : Agent
         float distance = Vector3.Distance(transform.position, pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position);
         Vector3 direction = transform.position - pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position;
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
+
+        sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
         sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
@@ -216,8 +219,9 @@ public class PandemicAgent : Agent
     {
         if (collision.gameObject.CompareTag("target"))
         {
-            AddReward(1f);
+            AddReward(1- (starvingLevel/100));
             collision.gameObject.transform.position = pandemicArea.ChooseRandomPosition();
+            starvingLevel = 100f;
         }
 
     }
@@ -313,6 +317,11 @@ public class PandemicAgent : Agent
     private void FixedUpdate()
     {
         //AddReward(-0.001f);
+        starvingLevel = starvingLevel - 0.05f;
+        if(starvingLevel <= 0f)
+        {
+            AddReward(-0.1f);
+        }
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             //Debug.Log("reward: " + reward);

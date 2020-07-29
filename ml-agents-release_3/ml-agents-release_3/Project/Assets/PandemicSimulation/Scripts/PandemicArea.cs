@@ -36,13 +36,43 @@ public class PandemicArea : MonoBehaviour
     public float recoverTime = 50f;
 
     [Header("SIR Model")]
-    //[System.NonSerialized]
+    private GameObject exportObj;
+    [System.NonSerialized]
     public int healthyCounter;
-    //[System.NonSerialized]
+    [System.NonSerialized]
     public int infectedCounter = 0;
-    //[System.NonSerialized]
+
+    [System.NonSerialized]
     public int recoveredCounter = 0;
 
+    public int HealthyCounter
+    {
+        get => healthyCounter;
+        set
+        {
+            healthyCounter = value;
+            exportObj.GetComponent<ExportCsv>().record();
+        }
+    }
+    public int InfectedCounter
+    {
+        get => infectedCounter;
+        set
+        {
+            infectedCounter = value;
+            exportObj.GetComponent<ExportCsv>().record();
+        }
+    }
+
+    public int RecoveredCounter
+    {
+        get => recoveredCounter;
+        set
+        {
+            recoveredCounter = value;
+            exportObj.GetComponent<ExportCsv>().record();
+        }
+    }
     //reward cube
     public GameObject rewardCube;
 
@@ -92,14 +122,25 @@ public class PandemicArea : MonoBehaviour
         return new Vector3(Random.Range(-range, range), 1f,
                 Random.Range(-range, range)) + transform.position;
     }
-
+    /// <summary>
+    /// A more complex version of ChooseRandomPosition(), User can set the wanted range.
+    /// </summary>
+    /// <param name="range">defines the square area that vector3 can be selected</param>
+    /// <returns></returns>
+    public Vector3 ChooseRandomPosition(float range)
+    {
+        return new Vector3(Random.Range(-range, range), 1f,
+                Random.Range(-range, range)) + transform.position;
+    }
 
     public void ResetPandemicArea()
     {
-        rewardCube.transform.position = ChooseRandomPosition();
+        rewardCube.transform.position = ChooseRandomPosition(range/2); // We want reward near to middle.
+
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
-        healthyCounter = healthyBotCount + agents.Count + infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
+        HealthyCounter = healthyBotCount + infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
+        recoveredCounter = 0;
 
         foreach (GameObject agent in agents)
         {
@@ -108,6 +149,7 @@ public class PandemicArea : MonoBehaviour
             agent.GetComponent<PandemicAgent>().changeAgentStatus();
             agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
             agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
+            agent.GetComponent<PandemicAgent>().starvingLevel = 100;
             //Randomly 
             agent.transform.position = ChooseRandomPosition();
             agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
@@ -144,6 +186,9 @@ public class PandemicArea : MonoBehaviour
 
     public void Awake()
     {
+        exportObj = GetComponentInChildren<ExportCsv>().gameObject;
+        exportObj.GetComponent<ExportCsv>().addHeaders();
+
         //Find child agents of this pandemicArea
         foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
         {

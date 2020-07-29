@@ -19,9 +19,14 @@ behaviors:
       extrinsic:
         gamma: 0.99
         strength: 1.0
+      curiosity:
+        gamma: 0.99
+        strength: 0.02
+        encoding_size: 256
+        learning_rate: 0.0003
     keep_checkpoints: 5
     checkpoint_interval: 500000
-    max_steps: 1.0e8
+    max_steps: 15.0e6
     time_horizon: 128
     summary_freq: 10000
     threaded: true
