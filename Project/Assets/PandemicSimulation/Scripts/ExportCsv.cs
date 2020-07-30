@@ -8,7 +8,7 @@ public class ExportCsv : MonoBehaviour
 {
    
     public StringBuilder sb = new System.Text.StringBuilder();
-
+    public bool isRecording = false;
     public PandemicArea pandemicArea;
     private string contentData;
 
@@ -20,14 +20,22 @@ public class ExportCsv : MonoBehaviour
 
     public void addHeaders()
     {
-        sb.AppendLine("HealthyCount;InfectedCount;RecoveredCount;Time");
+        if (isRecording)
+        {
+            sb.AppendLine("HealthyCount;InfectedCount;RecoveredCount;Time");
+        }
+        
     }
 
     public void record()
     {
-        decimal time = Decimal.Round((decimal)Time.time, 2);
-        sb.AppendLine(pandemicArea.healthyCounter.ToString() + ';' + pandemicArea.infectedCounter.ToString() + ";" + pandemicArea.recoveredCounter.ToString() + ";" + time.ToString());
-        SaveToFile(sb.ToString());
+        if (isRecording)
+        {
+            decimal time = Decimal.Round((decimal)Time.time, 2);
+            sb.AppendLine(pandemicArea.healthyCounter.ToString() + ';' + pandemicArea.infectedCounter.ToString() + ";" + pandemicArea.recoveredCounter.ToString() + ";" + time.ToString());
+            SaveToFile(sb.ToString());
+        }
+        
     }
     public void SaveToFile(string content)
     {

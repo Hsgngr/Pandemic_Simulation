@@ -298,8 +298,8 @@ public class PandemicAgent : Agent
             //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
-            AddReward(-5f);
-            EndEpisode();
+            AddReward(-1f);
+            //EndEpisode();
         }
     }
 

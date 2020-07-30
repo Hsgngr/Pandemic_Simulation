@@ -183,6 +183,7 @@ public class PandemicArea : MonoBehaviour
         }
 
     }
+    
 
     public void Awake()
     {
