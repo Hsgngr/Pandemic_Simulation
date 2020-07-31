@@ -12,10 +12,10 @@ Play Assets/PandemicSimulation/Scenes/T3.unity
 
 
 ### Prerequisites
-This project uses mlagents Release 4 (It is migrated from Unity-ml-agent 1.1.0 Release 3)
-Unity 2919.4.0f1
-Anaconda Environment with Python 3.7
-Tensorflow 2.3.0
+* This project uses mlagents Release 4 (It is migrated from Unity-ml-agent 1.1.0 Release 3)
+* Unity 2919.4.0f1
+* Anaconda Environment with Python 3.7
+* Tensorflow 2.3.0
 
  
 
