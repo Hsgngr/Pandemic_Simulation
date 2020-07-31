@@ -25,7 +25,7 @@ Tensorflow 2.3.0
 A step by step series of examples that tell you how to get a development env running
 
 To train an agent:
-* Go to the folder of trainer_config.yaml
+* Go to the folder of config/PPO or config/SAC then open trainer_config.yaml (each algorithm has its own configuration file)
 * Activate the environment
 * Start Training
 
