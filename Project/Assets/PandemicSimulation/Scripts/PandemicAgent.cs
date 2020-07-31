@@ -299,7 +299,7 @@ public class PandemicAgent : Agent
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
             AddReward(-1f);
-            //EndEpisode();
+            EndEpisode();
         }
     }
 
@@ -317,7 +317,8 @@ public class PandemicAgent : Agent
 
     private void FixedUpdate()
     {
-        //AddReward(-0.001f);
+        //Survive Bonus
+        AddReward(0.001f);
         
         if(starvingLevel <= 0f)
         {

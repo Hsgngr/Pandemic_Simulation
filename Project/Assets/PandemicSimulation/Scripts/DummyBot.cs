@@ -258,7 +258,7 @@ public class DummyBot : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         initialVelocity = new Vector3(UnityEngine.Random.Range(-20, 20), 0, UnityEngine.Random.Range(-20, 20));
 
-        coroutine = WaitAtStart(1.0f);
+        coroutine = WaitAtStart(2f);
         //StartCoroutine(coroutine);
     }
     private void FixedUpdate()
