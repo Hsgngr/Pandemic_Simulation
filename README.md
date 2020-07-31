@@ -7,15 +7,17 @@ Pandemic Simulation with Reinforcement Learning
 
 This is an open source pandemic simulation environment for reinforcement learning created with Unity ml-agents. This is a dissertation project for Advanced Computer Science Master in University of Sussex.
 
-Open the "Project" folder in Pandemic_Simulation\ml-agents-release_3\ml-agents-release_3\Project with Unity Editor.
-Play Assets/PandemicSimulation/Scenes/T1.unity
+Open the "Project" folder in Pandemic_Simulation with Unity Editor.
+Play Assets/PandemicSimulation/Scenes/T3.unity
 
 
 ### Prerequisites
-This project uses Unity-ml-agent 1.1.0 Release 3
+This project uses mlagents Release 4 (It is migrated from Unity-ml-agent 1.1.0 Release 3)
 Unity 2919.4.0f1
 Anaconda Environment with Python 3.7
-Tensorflow 2.2.0
+Tensorflow 2.3.0
+
+ 
 
 
 ### Installing
