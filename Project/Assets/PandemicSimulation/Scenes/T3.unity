@@ -306,7 +306,7 @@ PrefabInstance:
     - target: {fileID: 7040730826737049391, guid: 5d2750871fd26ef4997f750545e366a4,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -2819972313551032092, guid: 5d2750871fd26ef4997f750545e366a4, type: 3}
@@ -1011,12 +1011,12 @@ PrefabInstance:
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_DetectableTags.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_DetectableTags.Array.data[2]
-      value: CubeCollider
+      value: target
       objectReference: {fileID: 0}
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1041,7 +1041,7 @@ PrefabInstance:
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1051,12 +1051,23 @@ PrefabInstance:
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_BrainParameters.NumStackedVectorObservations
-      value: 8
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_InferenceDevice
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: d65efdf75e2ef684e82d0b308534a68e,
+        type: 3}
+    - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[1]
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1777005766337896640, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1171,7 +1182,7 @@ PrefabInstance:
     - target: {fileID: 5125391399361338799, guid: fb1e466824143b94c9a3be408f6be00f,
         type: 3}
       propertyPath: infectedBotCount
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5125391399361338799, guid: fb1e466824143b94c9a3be408f6be00f,
         type: 3}
