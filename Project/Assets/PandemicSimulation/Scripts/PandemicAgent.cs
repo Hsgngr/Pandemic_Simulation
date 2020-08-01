@@ -122,12 +122,12 @@ public class PandemicAgent : Agent
         Vector3 direction = transform.position - pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position;
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
 
-        sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
+        //sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
         sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
-        sensor.AddObservation(distance);
-        sensor.AddObservation(direction.normalized);
+        //sensor.AddObservation(distance);
+        //sensor.AddObservation(direction.normalized);
         
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
     }
@@ -169,15 +169,23 @@ public class PandemicAgent : Agent
     {
         if (Input.GetKey(KeyCode.A))
         {
-            actionsOut[0] = 1f;
+            actionsOut[0] = 0f;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            actionsOut[0] = 2f;
+            actionsOut[0] = 1f;
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            actionsOut[0] = 0f;
+            actionsOut[0] = 2f;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            actionsOut[1] = 1f;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            actionsOut[1] = 0f;
         }
     }
     /// <summary>
@@ -192,20 +200,30 @@ public class PandemicAgent : Agent
 
         var rotateAxis = (int)act[0];
 
-        dirToGo = transform.forward;
+        var direction = (int)act[1];
 
         switch (rotateAxis)
         {
             case 0:
-                rotateDir = Vector3.zero;
-                break;
-            case 1:
                 rotateDir = -transform.up;
                 break;
-            case 2:
+            case 1:
                 rotateDir = transform.up;
                 break;
+            case 2:
+                rotateDir = Vector3.zero;
+                break;
         }
+        switch (direction)
+        {
+            case 0:
+                dirToGo = transform.right;
+                break;
+            case 1:
+                dirToGo = -transform.right;
+                break;
+        }
+
         rb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
         transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
 
@@ -220,7 +238,8 @@ public class PandemicAgent : Agent
         if (collision.gameObject.CompareTag("target"))
         {
             float tempReward = 1 - (starvingLevel / 100);
-            AddReward(1- tempReward);
+            //AddReward(1- tempReward);
+            AddReward(1f);
             collision.gameObject.transform.position = pandemicArea.ChooseRandomPosition();
             starvingLevel = 100f;
         }
@@ -317,13 +336,12 @@ public class PandemicAgent : Agent
 
     private void FixedUpdate()
     {
-        //Survive Bonus
-        AddReward(0.001f);
+        
         
         if(starvingLevel <= 0f)
         {
-            AddReward(-1f);
-            EndEpisode();
+            //AddReward(-1f);
+            //EndEpisode();
         }
         else
         {
@@ -332,7 +350,8 @@ public class PandemicAgent : Agent
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             //Debug.Log("reward: " + reward);
-            
+            //Survive Bonus
+            AddReward(0.001f);
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Unity.Barracuda;
 using Unity.MLAgents;
 using UnityEngine;
@@ -126,11 +127,33 @@ public class PandemicArea : MonoBehaviour
     /// A more complex version of ChooseRandomPosition(), User can set the wanted range.
     /// </summary>
     /// <param name="range">defines the square area that vector3 can be selected</param>
-    /// <returns></returns>
+    /// <returns>a random position for object</returns>
     public Vector3 ChooseRandomPosition(float range)
     {
         return new Vector3(Random.Range(-range, range), 1f,
                 Random.Range(-range, range)) + transform.position;
+    }
+    /// <summary>
+    /// This version of the function gets 2 different values which are max and min ranges. 
+    /// It divides the square to an inner and outer square.
+    /// Agents will be spawned in the outer square, bots and reward will be spawned in inner square.
+    /// </summary>
+    /// <param name="maxRange">maximum range that it can take. Mostly this will be equal to range itself.</param>
+    /// <param name="minRange">minimum range, this will help to seperate areas between squares.</param>
+    /// <returns>a random position for object </returns>
+    public Vector3 ChooseRandomPosition(float maxRange,float minRange)
+    {
+        float randNum = Random.value;
+        if (randNum >= 0.5)
+        {   
+            return new Vector3(Random.Range(minRange, maxRange), 1f,
+                Random.Range(-range, range)) + transform.position;
+        }
+        else
+        {
+            return new Vector3(Random.Range(-maxRange,-minRange), 1f,
+                Random.Range(-range, range)) + transform.position;
+        }      
     }
 
     public void ResetPandemicArea()
@@ -151,7 +174,7 @@ public class PandemicArea : MonoBehaviour
             agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
             agent.GetComponent<PandemicAgent>().starvingLevel = 100;
             //Randomly 
-            agent.transform.position = ChooseRandomPosition();
+            agent.transform.position = ChooseRandomPosition(range,range/2);
             agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
         }
         //If its first time then List should be empty, Check if it empty
@@ -164,7 +187,7 @@ public class PandemicArea : MonoBehaviour
             //Reset every dummyBot in the list
             for (int i = 0; i < dummyBotList.Count; i++)
             {
-                dummyBotList[i].transform.position = ChooseRandomPosition();
+                dummyBotList[i].transform.position = ChooseRandomPosition(range/2);
                 dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
                 dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
                 dummyBotList[i].GetComponent<DummyBot>().StartCoroutine(dummyBotList[i].GetComponent<DummyBot>().WaitAtStart(1f)); //Frezee bots at the start of the episode.

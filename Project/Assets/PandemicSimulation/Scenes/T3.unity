@@ -303,7 +303,15 @@ PrefabInstance:
       propertyPath: m_TagString
       value: target
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7040730826737049391, guid: 5d2750871fd26ef4997f750545e366a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: -2819972313551032092, guid: 5d2750871fd26ef4997f750545e366a4, type: 3}
+    - {fileID: -4074191546119478435, guid: 5d2750871fd26ef4997f750545e366a4, type: 3}
+    - {fileID: 9113570523228841044, guid: 5d2750871fd26ef4997f750545e366a4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5d2750871fd26ef4997f750545e366a4, type: 3}
 --- !u!114 &443395729 stripped
 MonoBehaviour:
@@ -1003,7 +1011,7 @@ PrefabInstance:
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_DetectableTags.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1013,7 +1021,7 @@ PrefabInstance:
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_DetectableTags.Array.data[1]
-      value: target
+      value: CubeCollider
       objectReference: {fileID: 0}
     - target: {fileID: -7988557576766746473, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1038,12 +1046,12 @@ PrefabInstance:
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 9
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: m_BrainParameters.NumStackedVectorObservations
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1363520318531498113, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1118,7 +1126,7 @@ PrefabInstance:
     - target: {fileID: 4670239124458484783, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
       propertyPath: turnSpeed
-      value: 300
+      value: 360
       objectReference: {fileID: 0}
     - target: {fileID: 4670239124458484783, guid: 0a765678f2e52ba4890174b78cd4ec16,
         type: 3}
@@ -1163,7 +1171,7 @@ PrefabInstance:
     - target: {fileID: 5125391399361338799, guid: fb1e466824143b94c9a3be408f6be00f,
         type: 3}
       propertyPath: infectedBotCount
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5125391399361338799, guid: fb1e466824143b94c9a3be408f6be00f,
         type: 3}
