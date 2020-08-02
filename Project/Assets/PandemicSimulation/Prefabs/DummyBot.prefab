@@ -245,7 +245,7 @@ MonoBehaviour:
   infectionCoeff: 0
   probability: 0
   turnSpeed: 300
-  moveSpeed: 4
+  moveSpeed: 2
   isFrozen: 0
   nextActionTime: -1
   m_MoveType: 0
