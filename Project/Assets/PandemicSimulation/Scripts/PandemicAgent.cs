@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 /// <summary>
@@ -167,25 +168,43 @@ public class PandemicAgent : Agent
     /// <param name="actionsOut"> output action array</param>
     public override void Heuristic(float[] actionsOut)
     {
-        if (Input.GetKey(KeyCode.A))
+
+        if (Input.GetKey("a"))
         {
-            actionsOut[0] = 0f;
+            actionsOut[0] = 1;
         }
-        if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey("d"))
         {
-            actionsOut[0] = 1f;
+            actionsOut[0] = 2;
         }
-        if (Input.GetKey(KeyCode.Space))
+        else
         {
-            actionsOut[0] = 2f;
+            actionsOut[0] = 0;
         }
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey("w"))
         {
-            actionsOut[1] = 1f;
+            actionsOut[1] = 1;
         }
-        if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey("s"))
         {
-            actionsOut[1] = 0f;
+            actionsOut[1] = 2;
+        }
+        else
+        {
+            actionsOut[1] = 0;
+        }
+
+        if (Input.GetKey("q"))
+        {
+            actionsOut[2] = 1;
+        }
+        else if (Input.GetKey("e"))
+        {
+            actionsOut[2] = 2;
+        }
+        else
+        {
+            actionsOut[2] = 0;
         }
     }
     /// <summary>
@@ -195,41 +214,42 @@ public class PandemicAgent : Agent
     /// left-right and rotate</param>
     public void MoveAgent(float[] act)
     {
-        var dirToGo = Vector3.zero;
-        var rotateDir = Vector3.zero;
+        var rotation = (int)act[0];
+        var fwdAxes = (int)act[1];
+        var lateralAxes = (int)act[2];
 
-        var rotateAxis = (int)act[0];
 
-        var direction = (int)act[1];
-
-        switch (rotateAxis)
+        // vectorAction[0] 0 = no rotation, 1 = rot sx, 2 = rot rx
+        switch (rotation)
         {
-            case 0:
-                rotateDir = -transform.up;
-                break;
             case 1:
-                rotateDir = transform.up;
+                rb.transform.Rotate(0, -turnSpeed * Time.deltaTime, 0);
                 break;
             case 2:
-                rotateDir = Vector3.zero;
+                rb.transform.Rotate(0, turnSpeed * Time.deltaTime, 0);
                 break;
         }
-        switch (direction)
-        {
-            case 0:
-                dirToGo = transform.right;
-                break;
+
+        // vectorAction[1] 0= no movement, 1= mov fwd, 2= mov bkw,
+        switch (fwdAxes)
+        {         
             case 1:
-                dirToGo = -transform.right;
+                rb.transform.Translate(0, 0, moveSpeed * Time.deltaTime, Space.Self);
+                break;
+            case 2:
+                rb.transform.Translate(0, 0, -moveSpeed * Time.deltaTime, Space.Self);
                 break;
         }
 
-        rb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
-
-        if (rb.velocity.sqrMagnitude > 25f) // slow it down
+        // vectorAction[2] 0= no movement, 1= strife left, 2= strife right
+        switch (lateralAxes)
         {
-            rb.velocity *= 0.95f;
+            case 1:
+                rb.transform.Translate(-moveSpeed * Time.deltaTime, 0, 0, Space.Self);
+                break;
+            case 2:
+                rb.transform.Translate(moveSpeed * Time.deltaTime, 0, 0, Space.Self);
+                break;
         }
     }
 
@@ -336,7 +356,8 @@ public class PandemicAgent : Agent
 
     private void FixedUpdate()
     {
-        
+        //Discount
+        AddReward(-0.001f);
         
         if(starvingLevel <= 0f)
         {
@@ -351,7 +372,7 @@ public class PandemicAgent : Agent
         {
             //Debug.Log("reward: " + reward);
             //Survive Bonus
-            AddReward(0.001f);
+            //AddReward(0.001f);
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)
