@@ -77,6 +77,9 @@ public class PandemicArea : MonoBehaviour
     //reward cube
     public GameObject rewardCube;
 
+    //Environment Reset Parameters
+    public EnvironmentParameters m_ResetParams;
+
     /// <summary>
     /// Creates objects in random position at given amount
     /// </summary>

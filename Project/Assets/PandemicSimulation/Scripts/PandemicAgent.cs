@@ -181,11 +181,11 @@ public class PandemicAgent : Agent
         }
         if (Input.GetKey(KeyCode.W))
         {
-            actionsOut[1] = 1f;
+            actionsOut[1] = 0f;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            actionsOut[1] = 0f;
+            actionsOut[1] = 1f;
         }
     }
     /// <summary>
@@ -217,10 +217,10 @@ public class PandemicAgent : Agent
         switch (direction)
         {
             case 0:
-                dirToGo = transform.right;
+                dirToGo = transform.forward;
                 break;
             case 1:
-                dirToGo = -transform.right;
+                dirToGo = -transform.forward;
                 break;
         }
 
