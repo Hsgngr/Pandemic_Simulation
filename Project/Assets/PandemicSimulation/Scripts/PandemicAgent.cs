@@ -57,11 +57,19 @@ public class PandemicAgent : Agent
     [Range(0f, 100f)]
     public float starvingLevel = 100f; //again this will not included in MVP
 
-    //Market distance
-    private float marketDistance; //It not implemented yet.
+    //Environment Reset Parameters
+    public EnvironmentParameters m_ResetParams;
 
     [Tooltip("Recovery time after the infection starts")]
     public float recoverTime = 50f;
+
+    [Tooltip("Number of infected bots at start")]
+    public int infectedCount;
+
+    [Tooltip("Number of healthy bots at start")]
+    public int healthyCount;
+
+
     /// <summary>
     /// States for being healthy or infectious
     /// </summary>
@@ -112,9 +120,9 @@ public class PandemicAgent : Agent
         pandemicArea = GetComponentInParent<PandemicArea>();
         pandemicAreaObj = pandemicArea.gameObject;
 
-        exposureRadius = pandemicArea.exposureRadius;
-        GetComponent<SphereCollider>().radius = exposureRadius;
-        recoverTime = pandemicArea.recoverTime;
+        //define parameters as environment parameters for randomization and curriculum learning
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
+        SetResetParameters();
     }
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -126,9 +134,11 @@ public class PandemicAgent : Agent
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
         sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+
+        //Observations for getting reward easily
         //sensor.AddObservation(distance);
         //sensor.AddObservation(direction.normalized);
-        
+
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
     }
 
@@ -138,6 +148,7 @@ public class PandemicAgent : Agent
     public override void OnEpisodeBegin()
     {
         pandemicArea.ResetPandemicArea();
+        SetResetParameters();
 
         //Zero out velocities so that movement stops before a new episode begins
         rb.velocity = Vector3.zero;
@@ -233,6 +244,20 @@ public class PandemicAgent : Agent
         }
     }
 
+    public void SetResetParameters()
+    {
+        exposureRadius = m_ResetParams.GetWithDefault("exposureRadius", pandemicArea.exposureRadius);
+        GetComponent<SphereCollider>().radius = exposureRadius;
+        recoverTime = m_ResetParams.GetWithDefault("recoverTime", pandemicArea.recoverTime);
+        infectionCoeff = m_ResetParams.GetWithDefault("infectionCoeff", pandemicArea.infectionCoeff);
+
+        //healthyCount = (int) m_ResetParams.GetWithDefault("healthyCount", pandemicArea.healthyBotCount);
+        //infectedCount =(int)m_ResetParams.GetWithDefault("infectedCount", pandemicArea.infectedBotCount);
+
+        //pandemicArea.healthyBotCount = healthyCount;
+        //pandemicArea.infectedBotCount = infectedCount;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("target"))
@@ -278,7 +303,7 @@ public class PandemicAgent : Agent
             if (collider.CompareTag("dummyBot"))
             {
                 //If it is infected 
-                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED && collider.gameObject.GetComponent<DummyBot>().isFrozen== false)
+                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED && collider.gameObject.GetComponent<DummyBot>().isFrozen == false)
                 {
                     exposeInfection(collider.gameObject);
                 }
@@ -325,20 +350,12 @@ public class PandemicAgent : Agent
     //Moved to public override void Initialize()
     private void Awake()
     {
-        ////Get the PandemicArea
-        //pandemicArea = GetComponentInParent<PandemicArea>();
-        //pandemicAreaObj = pandemicArea.gameObject;
-
-        //GetComponent<SphereCollider>().radius = pandemicArea.exposureRadius;
-        //recoverTime = pandemicArea.recoverTime;
         Initialize();
     }
 
     private void FixedUpdate()
     {
-        
-        
-        if(starvingLevel <= 0f)
+        if (starvingLevel <= 0f)
         {
             //AddReward(-1f);
             //EndEpisode();

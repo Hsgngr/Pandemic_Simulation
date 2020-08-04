@@ -84,7 +84,7 @@ public class DummyBot : MonoBehaviour
 
     public agentStatus m_InfectionStatus = agentStatus.HEALTHY;
 
-       public void changeAgentStatus()
+    public void changeAgentStatus()
     {
         switch (m_InfectionStatus)
         {
@@ -100,7 +100,7 @@ public class DummyBot : MonoBehaviour
             case agentStatus.RECOVERED:
                 GetComponentInChildren<Renderer>().material = recoveredMaterial;
                 pandemicAreaObj.GetComponent<PandemicArea>().InfectedCounter--;
-                pandemicAreaObj.GetComponent<PandemicArea>().RecoveredCounter++;               
+                pandemicAreaObj.GetComponent<PandemicArea>().RecoveredCounter++;
                 break;
         }
     }
@@ -195,7 +195,7 @@ public class DummyBot : MonoBehaviour
             if (collider.CompareTag("dummyBot"))
             {
                 //If it is infected 
-                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == agentStatus.INFECTED)
+                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == agentStatus.INFECTED && collider.gameObject.GetComponent<DummyBot>().isFrozen == false)
                 {
                     exposeInfection(collider.gameObject);
                 }
@@ -239,10 +239,10 @@ public class DummyBot : MonoBehaviour
     /// <returns></returns>
     public IEnumerator WaitAtStart(float waitTime)
     {
-            isFrozen = true;
-            yield return new WaitForSeconds(waitTime);
-            isFrozen = false;
-        
+        isFrozen = true;
+        yield return new WaitForSeconds(waitTime);
+        isFrozen = false;
+
     }
 
     private void Awake()
