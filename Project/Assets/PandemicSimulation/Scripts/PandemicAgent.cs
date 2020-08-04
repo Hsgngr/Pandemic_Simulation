@@ -171,11 +171,11 @@ public class PandemicAgent : Agent
         {
             actionsOut[0] = 0f;
         }
-        if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D))
         {
             actionsOut[0] = 1f;
         }
-        if (Input.GetKey(KeyCode.Space))
+        else
         {
             actionsOut[0] = 2f;
         }
