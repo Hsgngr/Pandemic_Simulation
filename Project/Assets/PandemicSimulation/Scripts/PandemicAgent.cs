@@ -69,7 +69,6 @@ public class PandemicAgent : Agent
     [Tooltip("Number of healthy bots at start")]
     public int healthyCount;
 
-
     /// <summary>
     /// States for being healthy or infectious
     /// </summary>
@@ -133,13 +132,15 @@ public class PandemicAgent : Agent
         //sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
-        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+        //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
 
         //Observations for getting reward easily
-        //sensor.AddObservation(distance);
-        //sensor.AddObservation(direction.normalized);
+        sensor.AddObservation(distance);
+        sensor.AddObservation(direction.normalized);
 
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
+        //sensor.AddObservation(pandemicArea.infectedBotCount);
+        
     }
 
     /// <summary>
@@ -342,8 +343,8 @@ public class PandemicAgent : Agent
             //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
-            AddReward(-1f);
-            EndEpisode();
+            AddReward(-2f);          
+            EndEpisode();           
         }
     }
 
@@ -366,7 +367,6 @@ public class PandemicAgent : Agent
         }
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
-            //Debug.Log("reward: " + reward);
             //Survive Bonus
             AddReward(0.001f);
         }

@@ -138,14 +138,16 @@ public class PandemicArea : MonoBehaviour
                 Random.Range(-range, range)) + transform.position;
         }
     }
-
+    /// <summary>
+    /// Core method for resetting the simulation area. Every end of the episode area reset itself.
+    /// </summary>
     public void ResetPandemicArea()
     {
         //Environment Parameters (This is required for Curriculum Learning)
-        healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", 0);
-        infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", 1);
+        healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
+        infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
 
-        rewardCube.transform.position = ChooseRandomPosition(range / 2); // We want reward near to middle.
+        rewardCube.transform.position = ChooseRandomPosition(range*2/5); // We want reward close to middle.
 
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
