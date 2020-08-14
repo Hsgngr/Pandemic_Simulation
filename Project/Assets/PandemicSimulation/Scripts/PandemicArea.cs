@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Unity.Barracuda;
 using Unity.MLAgents;
 using UnityEngine;
@@ -16,6 +17,9 @@ public class PandemicArea : MonoBehaviour
     public GameObject dummyBot;
     public int healthyBotCount;
     public int infectedBotCount;
+
+    [Tooltip("The total number of allowed bots which can be spawn in pandemicArea.")]
+    public int botLimit;
 
     //List of DummyBots
     public List<GameObject> dummyBotList = new List<GameObject>();
@@ -76,47 +80,27 @@ public class PandemicArea : MonoBehaviour
     //reward cube
     public GameObject rewardCube;
 
-    /// <summary>
-    /// Creates objects in random position at given amount
-    /// </summary>
-    /// <param name="obj">The object which will be initialized</param>
-    /// <param name="num">Number of objects </param>
-    public void CreateObjectAtRandomPosition(GameObject obj, int num)
-    {
-        for (int i = 0; i < num; i++)
-        {
-            GameObject f = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)));
-        }
-    }
-    /// <summary>
-    /// Creates objets in random position with given amount of healthy and infected agents
-    /// </summary>
-    /// <param name="obj"> The object which will be instantiated</param>
-    /// <param name="goodNum">The number of healthy agents</param>
-    /// <param name="infectedNum">The number of infected agents</param>
-    public void CreateObjectAtRandomPosition(GameObject obj, int healthyNum, int infectedNum)
-    {
-        //Add default healthy bots
-        for (int i = 0; i < healthyNum; i++)
-        {
-            //Instantiate the dummyBot with choosenRandom,Position and choosenRandom rotation inside of the Pandemic Area Object
-            GameObject f = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)), transform);
-            f.GetComponent<SphereCollider>().radius = exposureRadius;
-            f.GetComponent<DummyBot>().infectionCoeff = infectionCoeff;
-            dummyBotList.Add(f);
+    //Environment Reset Parameters
+    public EnvironmentParameters m_ResetParams;
 
-        }
-        //Add default starter infected bots
-        for (int i = 0; i < infectedNum; i++)
+    /// <summary>
+    /// Instantiates dummybots.
+    /// </summary>
+    /// <param name="botCount">This is the maximum amount of bots that you can use. You need to define this before running the simulation.</param>
+    public void CreateBotAtRandomPosition(int botCount)
+    {
+        for (int i = 0; i < botCount; i++)
         {
             //Instantiate the dummyBot with choosenRandom,Position and choosenRandom rotation inside of the Pandemic Area Object
-            GameObject b = Instantiate(obj, ChooseRandomPosition(), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)), transform);
-            b.GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
-            b.GetComponent<DummyBot>().changeAgentStatus();
-            b.GetComponent<SphereCollider>().radius = exposureRadius;
-            dummyBotList.Add(b);
+            GameObject f = Instantiate(dummyBot, Vector3.zero, Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)), transform);
+            dummyBotList.Add(f);
         }
+        resetDummyBots();
     }
+    /// <summary>
+    /// Empty function for choosing random position inside of the area. DummyBots are using as they decide their next target.
+    /// </summary>
+    /// <returns></returns>
     public Vector3 ChooseRandomPosition()
     {
         return new Vector3(Random.Range(-range, range), 1f,
@@ -126,16 +110,44 @@ public class PandemicArea : MonoBehaviour
     /// A more complex version of ChooseRandomPosition(), User can set the wanted range.
     /// </summary>
     /// <param name="range">defines the square area that vector3 can be selected</param>
-    /// <returns></returns>
+    /// <returns>a random position for object</returns>
     public Vector3 ChooseRandomPosition(float range)
     {
         return new Vector3(Random.Range(-range, range), 1f,
                 Random.Range(-range, range)) + transform.position;
     }
-
+    /// <summary>
+    /// This version of the function gets 2 different values which are max and min ranges. 
+    /// It divides the square to an inner and outer square.
+    /// Agents will be spawned in the outer square, bots and reward will be spawned in inner square.
+    /// </summary>
+    /// <param name="maxRange">maximum range that it can take. Mostly this will be equal to range itself.</param>
+    /// <param name="minRange">minimum range, this will help to seperate areas between squares.</param>
+    /// <returns>a random position for object </returns>
+    public Vector3 ChooseRandomPosition(float maxRange, float minRange)
+    {
+        float randNum = Random.value;
+        if (randNum >= 0.5)
+        {
+            return new Vector3(Random.Range(minRange, maxRange), 1f,
+                Random.Range(-range, range)) + transform.position;
+        }
+        else
+        {
+            return new Vector3(Random.Range(-maxRange, -minRange), 1f,
+                Random.Range(-range, range)) + transform.position;
+        }
+    }
+    /// <summary>
+    /// Core method for resetting the simulation area. Every end of the episode area reset itself.
+    /// </summary>
     public void ResetPandemicArea()
     {
-        rewardCube.transform.position = ChooseRandomPosition(range/2); // We want reward near to middle.
+        //Environment Parameters (This is required for Curriculum Learning)
+        healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
+        infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
+
+        rewardCube.transform.position = ChooseRandomPosition(range*2/5); // We want reward close to middle.
 
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
@@ -151,39 +163,64 @@ public class PandemicArea : MonoBehaviour
             agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
             agent.GetComponent<PandemicAgent>().starvingLevel = 100;
             //Randomly 
-            agent.transform.position = ChooseRandomPosition();
+            agent.transform.position = ChooseRandomPosition(range, range / 2);
             agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
         }
         //If its first time then List should be empty, Check if it empty
         if (dummyBotList.Count == 0)
         {
-            CreateObjectAtRandomPosition(dummyBot, healthyBotCount, infectedBotCount);
+            CreateBotAtRandomPosition(botLimit);
         }
-        else
+        if (healthyBotCount + infectedBotCount > botLimit)
         {
-            //Reset every dummyBot in the list
-            for (int i = 0; i < dummyBotList.Count; i++)
+            Debug.LogWarning(" Total bot number cannot exceed botLimit. In order to increase the total number of bots, increase the bot limit and restart again.");
+        }
+        //Set Active bots as they needed, not more than that.
+        for (int i = 0; i < dummyBotList.Count; i++)
+        {
+            if (i < infectedBotCount + healthyBotCount)
             {
-                dummyBotList[i].transform.position = ChooseRandomPosition();
+                dummyBotList[i].SetActive(true);
+            }
+            else
+            {
+                dummyBotList[i].SetActive(false);
+            }
+        }
+        resetDummyBots();
+
+    }
+    /// <summary>
+    /// Divides bots to healthy and infected.
+    /// </summary>
+    public void resetDummyBots()
+    {
+        //Reset every dummyBot in the list
+        for (int i = 0; i < dummyBotList.Count; i++)
+        {
+            if (dummyBotList[i].activeSelf)
+            {
+                dummyBotList[i].transform.position = ChooseRandomPosition(range / 2);
                 dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
                 dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
                 dummyBotList[i].GetComponent<DummyBot>().StartCoroutine(dummyBotList[i].GetComponent<DummyBot>().WaitAtStart(1f)); //Frezee bots at the start of the episode.
+                dummyBotList[i].GetComponent<SphereCollider>().radius = exposureRadius;
+                dummyBotList[i].GetComponent<DummyBot>().infectionCoeff = infectionCoeff;
                 if (i < healthyBotCount)
                 {
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.HEALTHY;
-
                 }
-                else
+                else if( i < infectedBotCount + healthyBotCount)
                 {
                     dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
 
                 }
                 dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
             }
-        }
 
+        }
     }
-    
+
 
     public void Awake()
     {
@@ -194,8 +231,14 @@ public class PandemicArea : MonoBehaviour
         foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
         {
             agents.Add(agentSript.gameObject);
-        }
-
+        }      
+        
+    }
+    public void Start()
+    {
+        m_ResetParams = agents[0].GetComponent<PandemicAgent>().m_ResetParams;
+        healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
+        infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
         ResetPandemicArea();
     }
     public void Update()
@@ -203,6 +246,11 @@ public class PandemicArea : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetPandemicArea();
+            foreach (GameObject agent in agents)
+            {
+                agent.GetComponent<PandemicAgent>().SetResetParameters();
+            }
+
         }
     }
 
