@@ -98,13 +98,13 @@ public class PandemicAgent : Agent
             case agentStatus.INFECTED:
                 GetComponentInChildren<Renderer>().material = infectiousMaterial;
                 pandemicAreaObj.GetComponent<PandemicArea>().healthyCounter--;
-                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter++;
+                pandemicAreaObj.GetComponent<PandemicArea>().InfectedCounter++;
                 //Add - reward here.
                 break;
             case agentStatus.RECOVERED:
                 GetComponentInChildren<Renderer>().material = recoveredMaterial;
-                pandemicAreaObj.GetComponent<PandemicArea>().infectedCounter--;
-                pandemicAreaObj.GetComponent<PandemicArea>().recoveredCounter++;
+                pandemicAreaObj.GetComponent<PandemicArea>().InfectedCounter--;
+                pandemicAreaObj.GetComponent<PandemicArea>().RecoveredCounter++;
                 break;
         }
     }
@@ -140,7 +140,7 @@ public class PandemicAgent : Agent
 
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
         //sensor.AddObservation(pandemicArea.infectedBotCount);
-        
+
     }
 
     /// <summary>
@@ -343,8 +343,15 @@ public class PandemicAgent : Agent
             //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
-            AddReward(-2f);          
-            EndEpisode();           
+            AddReward(-2f);
+
+            //EndEpisode();  
+            //If infector is an agent then also penalize it too for infecting someone. Shame!
+            if (infector.GetComponent<PandemicAgent>())
+            {
+                infector.GetComponent<PandemicAgent>().AddReward(-2f);
+            }
+
         }
     }
 

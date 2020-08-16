@@ -83,6 +83,9 @@ public class PandemicArea : MonoBehaviour
     //Environment Reset Parameters
     public EnvironmentParameters m_ResetParams;
 
+    //Is there any agent in the environment
+    private bool isAgentExist;
+
     /// <summary>
     /// Instantiates dummybots.
     /// </summary>
@@ -144,27 +147,35 @@ public class PandemicArea : MonoBehaviour
     public void ResetPandemicArea()
     {
         //Environment Parameters (This is required for Curriculum Learning)
-        healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
-        infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
-
-        rewardCube.transform.position = ChooseRandomPosition(range*2/5); // We want reward close to middle.
+        if (isAgentExist)
+        {
+            healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
+            infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
+        }
+        rewardCube.transform.position = ChooseRandomPosition(range * 2 / 5); // We want reward close to middle
 
         //Reset infectedCounter and healthyCounter
         infectedCounter = 0;
-        HealthyCounter = healthyBotCount + infectedBotCount; //Count all of them and infected ones will be removed from DummyBot.cs
+        healthyCounter = healthyBotCount + infectedBotCount + agents.Count; //Count all of them and infected ones will be removed from DummyBot.cs
         recoveredCounter = 0;
 
-        foreach (GameObject agent in agents)
+        if (isAgentExist)
         {
-            //Restart the status of the agent
-            agent.GetComponent<PandemicAgent>().m_InfectionStatus = PandemicAgent.agentStatus.HEALTHY;
-            agent.GetComponent<PandemicAgent>().changeAgentStatus();
-            agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
-            agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
-            agent.GetComponent<PandemicAgent>().starvingLevel = 100;
-            //Randomly 
-            agent.transform.position = ChooseRandomPosition(range, range / 2);
-            agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+            foreach (GameObject agent in agents)
+            {
+                //Restart the status of the agent
+                if (agent.GetComponent<PandemicAgent>().m_InfectionStatus != PandemicAgent.agentStatus.HEALTHY)
+                {
+                    agent.GetComponent<PandemicAgent>().m_InfectionStatus = PandemicAgent.agentStatus.HEALTHY;
+                    agent.GetComponent<PandemicAgent>().changeAgentStatus();
+                }
+                agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
+                agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
+                agent.GetComponent<PandemicAgent>().starvingLevel = 100;
+                //Randomly 
+                agent.transform.position = ChooseRandomPosition(range, range / 2);
+                agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+            }
         }
         //If its first time then List should be empty, Check if it empty
         if (dummyBotList.Count == 0)
@@ -189,6 +200,8 @@ public class PandemicArea : MonoBehaviour
         }
         resetDummyBots();
 
+        healthyCounter = healthyBotCount + agents.Count;
+        infectedCounter = infectedBotCount;
     }
     /// <summary>
     /// Divides bots to healthy and infected.
@@ -208,17 +221,27 @@ public class PandemicArea : MonoBehaviour
                 dummyBotList[i].GetComponent<DummyBot>().infectionCoeff = infectionCoeff;
                 if (i < healthyBotCount)
                 {
-                    dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.HEALTHY;
+                    //If its not already has the healthyStatus, change it.
+                    if (dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus != DummyBot.agentStatus.HEALTHY)
+                    {
+                        dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.HEALTHY;
+                        dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
+                    }
                 }
-                else if( i < infectedBotCount + healthyBotCount)
+                else if (i < infectedBotCount + healthyBotCount)
                 {
-                    dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
+                    //If its not already has the infectedStatus, change the status.
+                    if (dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus != DummyBot.agentStatus.INFECTED)
+                    {
 
+                        dummyBotList[i].GetComponent<DummyBot>().m_InfectionStatus = DummyBot.agentStatus.INFECTED;
+                        dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
+                    }
                 }
-                dummyBotList[i].GetComponent<DummyBot>().changeAgentStatus();
             }
-
         }
+
+        
     }
 
 
@@ -227,29 +250,49 @@ public class PandemicArea : MonoBehaviour
         exportObj = GetComponentInChildren<ExportCsv>().gameObject;
         exportObj.GetComponent<ExportCsv>().addHeaders();
 
+        if (GetComponentInChildren<PandemicAgent>())
+            isAgentExist = true;
+        else isAgentExist = false;
+
         //Find child agents of this pandemicArea
-        foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
+        if (isAgentExist)
         {
-            agents.Add(agentSript.gameObject);
-        }      
-        
+            foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
+            {
+                agents.Add(agentSript.gameObject);
+            }
+        }
     }
     public void Start()
     {
-        m_ResetParams = agents[0].GetComponent<PandemicAgent>().m_ResetParams;
-        healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
-        infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
-        ResetPandemicArea();
+        if (isAgentExist)
+        {
+            m_ResetParams = agents[0].GetComponent<PandemicAgent>().m_ResetParams;
+            healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
+            infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
+        }
+        else //If an agent exist in the environment it will call the ResetPandemicArea() function in OnEpisodeBegin() anyway. So dont call twice.
+        {
+            ResetPandemicArea();
+        }
+
+
     }
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetPandemicArea();
-            foreach (GameObject agent in agents)
+            if (isAgentExist)
             {
-                agent.GetComponent<PandemicAgent>().SetResetParameters();
+                foreach (GameObject agent in agents)
+                {
+                    agent.GetComponent<PandemicAgent>().SetResetParameters();
+                }
             }
+            //When restart simulation restart also values
+            //Actually useless in a way we will not use Restart key during the simulation.
+            exportObj.GetComponent<ExportCsv>().record();
 
         }
     }

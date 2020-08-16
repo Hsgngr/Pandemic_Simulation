@@ -219,17 +219,20 @@ public class DummyBot : MonoBehaviour
     /// <param name="infector">The agent who is inside of the collider</param>
     private void exposeInfection(GameObject infector)
     {
-        //Distance between two agents
-        float distance = Vector3.Distance(infector.transform.position, transform.position);
-        probability = Mathf.InverseLerp(exposureRadius, 0, distance) / infectionCoeff;
-
-        //Debug.Log("Probability of getting infected is: " + probability);
-
-        if (Random.Range(0f, 1f) < probability)
+        if (!isFrozen) // They shouldnt infect each other while freezing
         {
-            // Debug.Log("You got infected");
-            m_InfectionStatus = agentStatus.INFECTED;
-            changeAgentStatus();
+            //Distance between two agents
+            float distance = Vector3.Distance(infector.transform.position, transform.position);
+            probability = Mathf.InverseLerp(exposureRadius, 0, distance) / infectionCoeff;
+
+            //Debug.Log("Probability of getting infected is: " + probability);
+
+            if (Random.Range(0f, 1f) < probability)
+            {
+                // Debug.Log("You got infected");
+                m_InfectionStatus = agentStatus.INFECTED;
+                changeAgentStatus();
+            }
         }
     }
     /// <summary>
