@@ -241,7 +241,7 @@ public class PandemicArea : MonoBehaviour
             }
         }
 
-        
+
     }
 
 
@@ -293,7 +293,6 @@ public class PandemicArea : MonoBehaviour
             //When restart simulation restart also values
             //Actually useless in a way we will not use Restart key during the simulation.
             exportObj.GetComponent<ExportCsv>().record();
-
         }
     }
 
