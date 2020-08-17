@@ -132,11 +132,11 @@ public class PandemicAgent : Agent
         //sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
-        //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
 
         //Observations for getting reward easily
-        sensor.AddObservation(distance);
-        sensor.AddObservation(direction.normalized);
+        //sensor.AddObservation(distance);
+        //sensor.AddObservation(direction.normalized);
 
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
         //sensor.AddObservation(pandemicArea.infectedBotCount);
