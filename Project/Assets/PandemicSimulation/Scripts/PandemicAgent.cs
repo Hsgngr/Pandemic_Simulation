@@ -343,13 +343,13 @@ public class PandemicAgent : Agent
             //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
-            AddReward(-2f);
+            SetReward(-1f);
 
             //EndEpisode();  
             //If infector is an agent then also penalize it too for infecting someone. Shame!
             if (infector.GetComponent<PandemicAgent>())
             {
-                infector.GetComponent<PandemicAgent>().AddReward(-2f);
+                infector.GetComponent<PandemicAgent>().AddReward(-1f);
             }
 
         }
@@ -375,7 +375,7 @@ public class PandemicAgent : Agent
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             //Survive Bonus
-            AddReward(0.001f);
+            SetReward(0.01f);
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)
