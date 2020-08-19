@@ -95,3 +95,5 @@ This project is inspired from followings:
 #### Reinforcement Learning Related
 * [Emergent Tool Use From Multi-Agent Autocurricula](https://arxiv.org/abs/1909.07528)
 
+## License
+[Apache License 2.0](https://github.com/Hsgngr/Pandemic_Simulation/blob/master/LICENSE)
