@@ -319,7 +319,6 @@ public class PandemicAgent : Agent
                 }
             }
         }
-
     }
     /// <summary>
     /// Gets the distance between agents and expose with infenction probability.
