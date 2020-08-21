@@ -78,6 +78,7 @@ public class PandemicAgent : Agent
         INFECTED,
         RECOVERED
     }
+    public bool isSafe;
 
     const int NUM_ITEM_TYPES = (int)agentStatus.RECOVERED; //The last state in the enum (returns 2)
 
@@ -319,6 +320,15 @@ public class PandemicAgent : Agent
                 }
             }
         }
+        if (collider.gameObject.tag == "safePlace")
+        {
+            isSafe = true;
+        }
+        else
+        {
+            isSafe = false;
+        }
+
     }
     /// <summary>
     /// Gets the distance between agents and expose with infenction probability.
