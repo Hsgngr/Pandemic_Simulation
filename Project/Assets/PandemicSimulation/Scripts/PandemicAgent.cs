@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
@@ -78,7 +79,13 @@ public class PandemicAgent : Agent
         INFECTED,
         RECOVERED
     }
-    public bool isSafe;
+    //Is agent in house
+    public bool isInHouse;
+    public bool houseLock;
+
+
+    //house
+    public GameObject house;
 
     const int NUM_ITEM_TYPES = (int)agentStatus.RECOVERED; //The last state in the enum (returns 2)
 
@@ -126,18 +133,26 @@ public class PandemicAgent : Agent
     }
     public override void CollectObservations(VectorSensor sensor)
     {
-        float distance = Vector3.Distance(transform.position, pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position);
-        Vector3 direction = transform.position - pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position;
+        float rewardDistance = Vector3.Distance(transform.position, pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position);
+        Vector3 rewardDirection = transform.position - pandemicAreaObj.GetComponent<PandemicArea>().rewardCube.transform.position;
+
+        float houseDistance = Vector3.Distance(transform.position, house.transform.position);
+        Vector3 houseDirection = transform.position - house.transform.position;
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
 
-        //sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
+        sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
-        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+        //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
 
         //Observations for getting reward easily
-        //sensor.AddObservation(distance);
-        //sensor.AddObservation(direction.normalized);
+        sensor.AddObservation(rewardDistance);
+        sensor.AddObservation(rewardDirection.normalized);
+
+        //Being lockedInHoused
+        sensor.AddObservation(houseLock);
+        sensor.AddObservation(houseDistance);
+        sensor.AddObservation(houseDirection);
 
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
         //sensor.AddObservation(pandemicArea.infectedBotCount);
@@ -200,6 +215,7 @@ public class PandemicAgent : Agent
         {
             actionsOut[1] = 1f;
         }
+        actionsOut[2] = Input.GetKey(KeyCode.L) ? 1.0f : 0.0f;
     }
     /// <summary>
     /// moves the agent
@@ -208,12 +224,15 @@ public class PandemicAgent : Agent
     /// left-right and rotate</param>
     public void MoveAgent(float[] act)
     {
+        var lockCommand = false;
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
         var rotateAxis = (int)act[0];
 
         var direction = (int)act[1];
+
+        var houseAxis = (int)act[2];
 
         switch (rotateAxis)
         {
@@ -236,13 +255,49 @@ public class PandemicAgent : Agent
                 dirToGo = -transform.forward;
                 break;
         }
-
-        rb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+        switch (houseAxis)
+        {
+            case 0:
+                lockCommand = false;
+                break;
+            case 1:
+                lockCommand = true;
+                break;
+        }
+        if (lockCommand)
+        {
+            // Start Lockdown
+            if (isInHouse && !house.GetComponent<house>().isLocked)
+            {
+                rb.velocity = Vector3.zero;
+                Vector3 housePosition = house.transform.position;
+                transform.position = new Vector3(housePosition.x, this.transform.position.y, housePosition.z);
+                isFrozen = true;
+                house.GetComponent<house>().Lock();
+            }
+        }
+        else
+        //Release
+        {       
+            if (isInHouse && house.GetComponent<house>().isLocked)
+            {
+                isFrozen = false;
+                house.GetComponent<house>().Unlock();
+            }
+        }
+        //Even in the house, agent can freely rotate
         transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
 
-        if (rb.velocity.sqrMagnitude > 25f) // slow it down
+        if (!isFrozen || !isInHouse)
         {
-            rb.velocity *= 0.95f;
+            //Move agent
+            rb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+
+            //Limit the velocity of the agent
+            if (rb.velocity.sqrMagnitude > 25f) // slow it down
+            {
+                rb.velocity *= 0.95f;
+            }
         }
     }
 
@@ -265,8 +320,8 @@ public class PandemicAgent : Agent
         if (collision.gameObject.CompareTag("target"))
         {
             float tempReward = 1 - (starvingLevel / 100);
-            //AddReward(1- tempReward);
-            AddReward(1f);
+            AddReward(tempReward);
+            //AddReward(1f);
             collision.gameObject.transform.position = pandemicArea.ChooseRandomPosition();
             starvingLevel = 100f;
         }
@@ -288,7 +343,21 @@ public class PandemicAgent : Agent
     /// <param name="other">The trigger collider</param>
     private void OnTriggerStay(Collider other)
     {
+        if (other.gameObject.tag == "safePlace")
+        {
+            isInHouse = true;
+
+        }
+
         TriggerEnterOrStay(other);
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "safePlace")
+        {
+            isInHouse = false;
+
+        }
     }
 
     /// <summary>
@@ -301,34 +370,30 @@ public class PandemicAgent : Agent
         //Check if our agent is healthy, otherwise there is nothing like reinfection
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
-            //Check if its a dummyBot   
-            if (collider.CompareTag("dummyBot"))
+            //If its outside of the house
+            if (!isInHouse)
             {
-                //If it is infected 
-                if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED && collider.gameObject.GetComponent<DummyBot>().isFrozen == false)
+                //Check if its a dummyBot   
+                if (collider.CompareTag("dummyBot"))
                 {
-                    exposeInfection(collider.gameObject);
+                    //If it is infected 
+                    if (collider.gameObject.GetComponent<DummyBot>().m_InfectionStatus == DummyBot.agentStatus.INFECTED && collider.gameObject.GetComponent<DummyBot>().isFrozen == false)
+                    {
+                        exposeInfection(collider.gameObject);
+                    }
+                }
+                //Check if it is an agent
+                else if (collider.CompareTag("agent"))
+                {
+                    //Check if it is infected
+                    if (collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus == PandemicAgent.agentStatus.INFECTED)
+                    {
+                        exposeInfection(collider.gameObject);
+                    }
                 }
             }
-            //Check if it is an agent
-            else if (collider.CompareTag("agent"))
-            {
-                //Check if it is infected
-                if (collider.gameObject.GetComponent<PandemicAgent>().m_InfectionStatus == PandemicAgent.agentStatus.INFECTED)
-                {
-                    exposeInfection(collider.gameObject);
-                }
-            }
-        }
-        if (collider.gameObject.tag == "safePlace")
-        {
-            isSafe = true;
-        }
-        else
-        {
-            isSafe = false;
-        }
 
+        }
     }
     /// <summary>
     /// Gets the distance between agents and expose with infenction probability.
@@ -354,7 +419,7 @@ public class PandemicAgent : Agent
             changeAgentStatus();
             SetReward(-1f);
 
-            //EndEpisode();  
+            EndEpisode();  
             //If infector is an agent then also penalize it too for infecting someone. Shame!
             if (infector.GetComponent<PandemicAgent>())
             {
@@ -374,12 +439,12 @@ public class PandemicAgent : Agent
     {
         if (starvingLevel <= 0f)
         {
-            //AddReward(-1f);
-            //EndEpisode();
+            AddReward(-1f);
+            EndEpisode();
         }
         else
         {
-            starvingLevel = starvingLevel - 0.05f;
+            starvingLevel = starvingLevel - 0.07f;
         }
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {

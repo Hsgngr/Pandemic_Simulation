@@ -172,9 +172,12 @@ public class PandemicArea : MonoBehaviour
                 agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
                 agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
                 agent.GetComponent<PandemicAgent>().starvingLevel = 100;
-                //Randomly 
+                //Randomly             
                 agent.transform.position = ChooseRandomPosition(range, range / 2);
-                agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+                agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));     
+                agent.GetComponent<PandemicAgent>().house.GetComponent<house>().Unlock();
+                agent.GetComponent<PandemicAgent>().house.transform.position = ChooseRandomPosition(range *2/3, range / 2);
+                agent.GetComponent<PandemicAgent>().house.GetComponent<house>().resetHouse();
             }
         }
         //If its first time then List should be empty, Check if it empty

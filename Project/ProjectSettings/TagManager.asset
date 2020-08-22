@@ -29,6 +29,9 @@ TagManager:
   - symbol_O_Goal
   - purpleAgent
   - purpleGoal
+  - CubeCollider
+  - safePlace
+  - dummyBot
   layers:
   - Default
   - TransparentFX
@@ -39,8 +42,8 @@ TagManager:
   - 
   - 
   - invisible
-  - 
-  - 
+  - safePlace
+  - cube
   - 
   - 
   - 

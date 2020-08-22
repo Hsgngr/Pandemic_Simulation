@@ -1357,7 +1357,7 @@ PrefabInstance:
     - target: {fileID: 2445116040604891157, guid: ac8056654cb05ed41a33d32369cb03a1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2445116040604891157, guid: ac8056654cb05ed41a33d32369cb03a1,
         type: 3}
@@ -5607,7 +5607,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 40, y: -45, z: 0}
 --- !u!108 &108227806783069343
 Light:
@@ -5677,9 +5677,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 276636895, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 378228137, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 710675278, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 857120574, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1086444499, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
       propertyPath: m_Enabled
@@ -5693,10 +5705,18 @@ PrefabInstance:
       propertyPath: m_TagString
       value: safePlace
       objectReference: {fileID: 0}
+    - target: {fileID: 1140123267, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 1664038930, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1873161565}
+    - target: {fileID: 1773230749, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1959124080, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}
       propertyPath: isRecording
       value: 0
@@ -5800,6 +5820,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8099162837813576120, guid: fb1e466824143b94c9a3be408f6be00f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8800880732471857657, guid: fb1e466824143b94c9a3be408f6be00f,
         type: 3}
       propertyPath: m_Model
@@ -5815,6 +5840,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_BrainParameters.NumStackedVectorObservations
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8800880732471857657, guid: fb1e466824143b94c9a3be408f6be00f,
+        type: 3}
+      propertyPath: m_BehaviorType
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb1e466824143b94c9a3be408f6be00f, type: 3}

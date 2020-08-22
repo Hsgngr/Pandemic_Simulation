@@ -345,7 +345,7 @@ GameObject:
   - component: {fileID: 4670239124458484783}
   - component: {fileID: -8237695576303710740}
   - component: {fileID: -7988557576766746473}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: PandemicAgent
   m_TagString: agent
   m_Icon: {fileID: 0}
@@ -447,7 +447,11 @@ MonoBehaviour:
   turnSpeed: 300
   moveSpeed: 2
   isFrozen: 0
+  starvingLevel: 100
   recoverTime: 50
+  infectedCount: 0
+  healthyCount: 0
+  isSafe: 0
   m_InfectionStatus: 0
 --- !u!114 &-8237695576303710740
 MonoBehaviour:

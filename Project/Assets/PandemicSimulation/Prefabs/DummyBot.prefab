@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 2786648394365923616}
   - component: {fileID: 2786648394365923617}
   - component: {fileID: 1208631888}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: DummyBot
   m_TagString: dummyBot
   m_Icon: {fileID: 0}
