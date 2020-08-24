@@ -140,7 +140,7 @@ public class PandemicAgent : Agent
         Vector3 houseDirection = transform.position - house.transform.position;
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
 
-        sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
+        sensor.AddObservation(starvingLevel / 100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
         //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
@@ -266,6 +266,12 @@ public class PandemicAgent : Agent
         }
         if (lockCommand)
         {
+            if (isInHouse)
+            {
+                //Survive Bonus
+                SetReward(0.01f);
+            }
+
             // Start Lockdown
             if (isInHouse && !house.GetComponent<house>().isLocked)
             {
@@ -278,7 +284,7 @@ public class PandemicAgent : Agent
         }
         else
         //Release
-        {       
+        {
             if (isInHouse && house.GetComponent<house>().isLocked)
             {
                 isFrozen = false;
@@ -419,7 +425,7 @@ public class PandemicAgent : Agent
             changeAgentStatus();
             SetReward(-1f);
 
-            EndEpisode();  
+            EndEpisode();
             //If infector is an agent then also penalize it too for infecting someone. Shame!
             if (infector.GetComponent<PandemicAgent>())
             {
@@ -444,12 +450,12 @@ public class PandemicAgent : Agent
         }
         else
         {
-            starvingLevel = starvingLevel - 0.07f;
+            starvingLevel = starvingLevel - 0.03f;
         }
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             //Survive Bonus
-            SetReward(0.01f);
+            //SetReward(0.01f);
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)
