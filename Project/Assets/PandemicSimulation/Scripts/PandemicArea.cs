@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Grpc.Core;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -10,6 +11,11 @@ using UnityEngine;
 /// </summary>
 public class PandemicArea : MonoBehaviour
 {
+    [Tooltip("Is this training")]
+    public bool isTraining;
+    public int agentCount;
+    public GameObject agent;
+
     [Tooltip("Range of the area")]
     public float range;
 
@@ -172,8 +178,16 @@ public class PandemicArea : MonoBehaviour
                 agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
                 agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
                 agent.GetComponent<PandemicAgent>().starvingLevel = 100;
-                //Randomly 
-                agent.transform.position = ChooseRandomPosition(range, range / 2);
+                //Randomly
+                if (!isTraining)
+                {
+                    agent.transform.position = ChooseRandomPosition(range);
+                }
+                else
+                {
+                    agent.transform.position = ChooseRandomPosition(range, range / 2);
+                }
+
                 agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
             }
         }
@@ -213,7 +227,15 @@ public class PandemicArea : MonoBehaviour
         {
             if (dummyBotList[i].activeSelf)
             {
-                dummyBotList[i].transform.position = ChooseRandomPosition(range / 2);
+                if (!isTraining)
+                {
+                    dummyBotList[i].transform.position = ChooseRandomPosition(range);
+                }
+                else
+                {
+                    dummyBotList[i].transform.position = ChooseRandomPosition(range / 2);
+                }
+
                 dummyBotList[i].GetComponent<DummyBot>().nextActionTime = -1f;
                 dummyBotList[i].GetComponent<DummyBot>().recoverTime = recoverTime; //Reset the recoverTime also
                 dummyBotList[i].GetComponent<DummyBot>().StartCoroutine(dummyBotList[i].GetComponent<DummyBot>().WaitAtStart(1f)); //Frezee bots at the start of the episode.
@@ -255,13 +277,36 @@ public class PandemicArea : MonoBehaviour
         else isAgentExist = false;
 
         //Find child agents of this pandemicArea
-        if (isAgentExist)
+        if (!isTraining)
         {
-            foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
+            for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(agentSript.gameObject);
+                GameObject f = Instantiate(agent, ChooseRandomPosition(range), Quaternion.Euler(new Vector3(0f, Random.Range(0f, 360f), 0f)), transform);
+                if (i < agentCount / 2)
+                {
+                    f.GetComponent<SphereCollider>().radius = exposureRadius / 2;
+
+                }
+                else
+                {
+                    f.GetComponent<SphereCollider>().radius = exposureRadius;
+                }
+                f.GetComponent<SphereCollider>().radius = exposureRadius;
+
+                agents.Add(f);
             }
         }
+        else
+        {
+            if (isAgentExist)
+            {
+                foreach (PandemicAgent agentSript in GetComponentsInChildren<PandemicAgent>())
+                {
+                    agents.Add(agentSript.gameObject);
+                }
+            }
+        }
+
     }
     public void Start()
     {
@@ -273,7 +318,9 @@ public class PandemicArea : MonoBehaviour
         }
         else //If an agent exist in the environment it will call the ResetPandemicArea() function in OnEpisodeBegin() anyway. So dont call twice.
         {
-            ResetPandemicArea();
+            if (!isTraining){
+                ResetPandemicArea();
+            }
         }
 
 
@@ -293,6 +340,17 @@ public class PandemicArea : MonoBehaviour
             //When restart simulation restart also values
             //Actually useless in a way we will not use Restart key during the simulation.
             exportObj.GetComponent<ExportCsv>().record();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            foreach (GameObject agent in agents)
+            {
+                agent.GetComponent<SphereCollider>().radius = exposureRadius * 4;
+            }
+            foreach (GameObject bot in dummyBotList)
+            {
+                bot.GetComponent<SphereCollider>().radius = exposureRadius * 4;
+            }
         }
     }
 

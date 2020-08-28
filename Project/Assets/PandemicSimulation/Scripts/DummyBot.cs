@@ -255,7 +255,7 @@ public class DummyBot : MonoBehaviour
         pandemicAreaObj = pandemicArea.gameObject;
 
         targetPosition = pandemicArea.ChooseRandomPosition();
-        GetComponent<SphereCollider>().radius = exposureRadius;
+        //GetComponent<SphereCollider>().radius = exposureRadius;
         recoverTime = pandemicArea.recoverTime;
 
         rb = GetComponent<Rigidbody>();

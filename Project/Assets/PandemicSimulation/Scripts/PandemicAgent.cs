@@ -247,8 +247,8 @@ public class PandemicAgent : Agent
 
     public void SetResetParameters()
     {
-        exposureRadius = m_ResetParams.GetWithDefault("exposureRadius", pandemicArea.exposureRadius);
-        GetComponent<SphereCollider>().radius = exposureRadius;
+        //exposureRadius = m_ResetParams.GetWithDefault("exposureRadius", pandemicArea.exposureRadius);
+        //GetComponent<SphereCollider>().radius = exposureRadius;
         recoverTime = m_ResetParams.GetWithDefault("recoverTime", pandemicArea.recoverTime);
         infectionCoeff = m_ResetParams.GetWithDefault("infectionCoeff", pandemicArea.infectionCoeff);
 
