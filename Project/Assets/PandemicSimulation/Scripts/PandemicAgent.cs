@@ -55,8 +55,8 @@ public class PandemicAgent : Agent
 
     private Vector3 rewardDistance;
     //Starving level;
-    [Range(0f, 100f)]
-    public float starvingLevel = 100f; //again this will not included in MVP
+    [Range(0f, 1f)]
+    public float starvingLevel = 1f; //again this will not included in MVP
 
     //Environment Reset Parameters
     public EnvironmentParameters m_ResetParams;
@@ -140,7 +140,7 @@ public class PandemicAgent : Agent
         Vector3 houseDirection = transform.position - house.transform.position;
         var localVelocity = transform.InverseTransformDirection(rb.velocity);
 
-        sensor.AddObservation(starvingLevel / 100); // Dividing with 100 for normalization
+        sensor.AddObservation(starvingLevel); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
         //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
@@ -325,11 +325,11 @@ public class PandemicAgent : Agent
     {
         if (collision.gameObject.CompareTag("target"))
         {
-            float tempReward = 1 - (starvingLevel / 100);
+            float tempReward = 1 - starvingLevel;
             AddReward(tempReward);
             //AddReward(1f);
             collision.gameObject.transform.position = pandemicArea.ChooseRandomPosition();
-            starvingLevel = 100f;
+            starvingLevel = 1f;
         }
 
     }
@@ -450,7 +450,7 @@ public class PandemicAgent : Agent
         }
         else
         {
-            starvingLevel = starvingLevel - 0.03f;
+            starvingLevel = starvingLevel - 0.0007f;
         }
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {

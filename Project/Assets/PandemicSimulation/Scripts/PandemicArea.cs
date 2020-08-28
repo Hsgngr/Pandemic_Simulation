@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using Unity.Barracuda;
 using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 /// <summary>
 /// Manages spawning bots and market
@@ -171,7 +172,7 @@ public class PandemicArea : MonoBehaviour
                 }
                 agent.GetComponent<PandemicAgent>().infectionCoeff = infectionCoeff;
                 agent.GetComponent<PandemicAgent>().recoverTime = recoverTime;
-                agent.GetComponent<PandemicAgent>().starvingLevel = 100;
+                agent.GetComponent<PandemicAgent>().starvingLevel = 1;
                 //Randomly             
                 agent.transform.position = ChooseRandomPosition(range, range / 2);
                 agent.transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));     
@@ -296,6 +297,28 @@ public class PandemicArea : MonoBehaviour
             //When restart simulation restart also values
             //Actually useless in a way we will not use Restart key during the simulation.
             exportObj.GetComponent<ExportCsv>().record();
+        }
+        //Change to heuristics
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            if (isAgentExist)
+            {
+                foreach (GameObject agent in agents)
+                {
+                    agent.GetComponent<BehaviorParameters>().BehaviorType = BehaviorType.HeuristicOnly;
+                }
+            }
+        }
+        //Change to Default
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            if (isAgentExist)
+            {
+                foreach (GameObject agent in agents)
+                {
+                    agent.GetComponent<BehaviorParameters>().BehaviorType = BehaviorType.Default;
+                }
+            }
         }
     }
 
