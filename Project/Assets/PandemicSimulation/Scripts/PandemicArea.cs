@@ -83,6 +83,9 @@ public class PandemicArea : MonoBehaviour
     //Environment Reset Parameters
     public EnvironmentParameters m_ResetParams;
 
+    //StatRecorder
+    private statRecorder statRecorder;
+
     //Is there any agent in the environment
     private bool isAgentExist;
 
@@ -158,6 +161,10 @@ public class PandemicArea : MonoBehaviour
         infectedCounter = 0;
         healthyCounter = healthyBotCount + infectedBotCount + agents.Count; //Count all of them and infected ones will be removed from DummyBot.cs
         recoveredCounter = 0;
+
+        statRecorder.totalScore = 0;
+        statRecorder.infectedCounts = 0;
+        statRecorder.collisionCounts = 0;
 
         if (isAgentExist)
         {
@@ -249,6 +256,7 @@ public class PandemicArea : MonoBehaviour
     {
         exportObj = GetComponentInChildren<ExportCsv>().gameObject;
         exportObj.GetComponent<ExportCsv>().addHeaders();
+        statRecorder = GetComponentInChildren<statRecorder>();
 
         if (GetComponentInChildren<PandemicAgent>())
             isAgentExist = true;
