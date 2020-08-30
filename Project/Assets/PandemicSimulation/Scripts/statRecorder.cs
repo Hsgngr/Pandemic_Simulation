@@ -23,6 +23,11 @@ public class statRecorder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //If every agent is infected finish episode early.
+        if (infectedCounts == pandemicArea.agents.Count)
+        {
+            pandemicArea.endAllAgentsEpisodes();
+        }
         scoreText.text = $"Score: {infectedCounts}";
         // Send stats via SideChannel so that they'll appear in TensorBoard.
         // These values get averaged every summary_frequency steps, so we don't

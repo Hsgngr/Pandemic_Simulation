@@ -250,6 +250,13 @@ public class PandemicArea : MonoBehaviour
 
 
     }
+    public void endAllAgentsEpisodes()
+    {
+        foreach(GameObject agent in agents)
+        {
+            agent.GetComponent<PandemicAgent>().EndEpisode();
+        }
+    }
 
 
     public void Awake()
@@ -276,8 +283,8 @@ public class PandemicArea : MonoBehaviour
         if (isAgentExist)
         {
             m_ResetParams = agents[0].GetComponent<PandemicAgent>().m_ResetParams;
-            healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
-            infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
+            healthyBotCount = Mathf.FloorToInt(m_ResetParams.GetWithDefault("healthyCount", healthyBotCount));
+            infectedBotCount = Mathf.FloorToInt(m_ResetParams.GetWithDefault("infectedCount", infectedBotCount));
         }
         else //If an agent exist in the environment it will call the ResetPandemicArea() function in OnEpisodeBegin() anyway. So dont call twice.
         {
