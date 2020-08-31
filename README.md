@@ -97,3 +97,7 @@ This project is inspired from followings:
 
 ## License
 [Apache License 2.0](https://github.com/Hsgngr/Pandemic_Simulation/blob/master/LICENSE)
+
+## (B) Citation, Contact
+
+If you find this useful for your research, please consider citing this [Hsgngr](https://github.com/Hsgngr). Please contact Ege Hosgungor \<hsgngr@gmail.com\> with any comments or feedback.
