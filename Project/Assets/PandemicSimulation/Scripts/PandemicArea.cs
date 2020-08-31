@@ -27,7 +27,6 @@ public class PandemicArea : MonoBehaviour
     //List of Agents
     public List<GameObject> agents = new List<GameObject>();
 
-
     [Header("InfectionSettings")]
     [Tooltip("The maximum possible distance for exposure to occur aka radius (Default 8f)")]
     public float exposureRadius = 8f;
@@ -257,7 +256,13 @@ public class PandemicArea : MonoBehaviour
             agent.GetComponent<PandemicAgent>().EndEpisode();
         }
     }
-
+    public void addRewardAllAgents(float reward)
+    {
+        foreach(GameObject agent in agents)
+        {
+            agent.GetComponent<PandemicAgent>().AddReward(reward);
+        }
+    }
 
     public void Awake()
     {

@@ -9,12 +9,15 @@ using UnityEngine;
 /// </summary>
 public class PandemicAgent : Agent
 {
+    [HideInInspector]
     [Tooltip("The material when the agent is healthy")]
     public Material healthyMaterial;
 
+    [HideInInspector]
     [Tooltip("The material when the agent is infected")]
     public Material infectiousMaterial;
 
+    [HideInInspector]
     [Tooltip("The material when the bot is infected")]
     public Material recoveredMaterial;
 
@@ -49,6 +52,7 @@ public class PandemicAgent : Agent
     // Speed of agent movement.
     public float moveSpeed = 2;
 
+    [HideInInspector]
     //Check if agent is frozen or not;
     public bool isFrozen = false;
 
@@ -66,9 +70,11 @@ public class PandemicAgent : Agent
     [Tooltip("Recovery time after the infection starts")]
     public float recoverTime = 50f;
 
+    [HideInInspector]
     [Tooltip("Number of infected bots at start")]
     public int infectedCount;
-
+    
+    [HideInInspector]
     [Tooltip("Number of healthy bots at start")]
     public int healthyCount;
 
@@ -145,6 +151,10 @@ public class PandemicAgent : Agent
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
         //sensor.AddObservation(pandemicArea.infectedBotCount);
 
+        //Agentların health status sayısı verilebilir
+        //sensor.AddObservation(pandemicArea.healthyCounter);
+        //sensor.AddObservation(pandemicArea.infectedCounter);
+        //sensor.AddObservation(pandemicArea.recoveredCounter);
     }
 
     /// <summary>
@@ -363,6 +373,7 @@ public class PandemicAgent : Agent
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
             SetReward(-1f);
+            //pandemicArea.addRewardAllAgents(-0.5f);
             statRecorder.infectedCounts += 1;
 
             //EndEpisode();  
