@@ -73,7 +73,11 @@ Single-Agent Environment: Surviving in an Epidemic outbreak and collecting rewar
 <img src="images/reward.gif">
 </p>
 
+Multi-Agent Environment: Social Distancing and discovery of self-quarantine
 
+<p>
+<img src="images/multi-agent.gif">
+</p>
 
 Different states of the agents
 
