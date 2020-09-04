@@ -1,5 +1,5 @@
 # Pandemic Simulation
-Pandemic Simulation with Reinforcement Learning 
+SIMULATION-BASED REINFORCEMENT LEARNING FOR SOCIAL DISTANCING
 
 ![](images/pandemic_simulation.png)
 
