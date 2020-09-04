@@ -75,9 +75,11 @@ Single-Agent Environment: Surviving in an Epidemic outbreak and collecting rewar
 
 
 
-States of agents: Represents the SIR Model which is used for visualizing pandemic disease.
+Different states of the agents
 
-![](images/agent_states.png)
+![](images/agent_states_1.png)
+
+Through the simulation, the agent’s status of health changes. To represent the change, we used 4 different colors. a) White Bots indicates that the agent is not controlled by a brain. It only has simple hard-coded actions such as directly going targeted locations or bouncing from the walls. This represents individuals in a community who are not acting logically. b) Blue Bots are agents with a brain that controls them. c)Red Bots indicates whether with brain or not the bot is infected. d)Purple indicates that the agent is not infectious anymore. In SIR models’ purple agents call as Recovered-Removed.
 
 ## Authors
 
