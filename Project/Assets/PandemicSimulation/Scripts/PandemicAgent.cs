@@ -291,6 +291,7 @@ public class PandemicAgent : Agent
             if (collision.gameObject.CompareTag("agent"))
             {
                 //Each agent will count this therefore its half.
+
                 statRecorder.collisionCounts += 0.5f;
             }
             else if (collision.gameObject.CompareTag("dummyBot"))
