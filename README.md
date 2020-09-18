@@ -67,6 +67,7 @@ Epidemic Spread Simulation
 <img src="images/sim_1.gif">
 </p>
 
+
 Single-Agent Environment: Surviving in an Epidemic outbreak and collecting rewards
 
 <p>
