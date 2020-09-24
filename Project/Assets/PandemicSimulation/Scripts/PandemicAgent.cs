@@ -9,12 +9,15 @@ using UnityEngine;
 /// </summary>
 public class PandemicAgent : Agent
 {
+    [HideInInspector]
     [Tooltip("The material when the agent is healthy")]
     public Material healthyMaterial;
 
+    [HideInInspector]
     [Tooltip("The material when the agent is infected")]
     public Material infectiousMaterial;
 
+    [HideInInspector]
     [Tooltip("The material when the bot is infected")]
     public Material recoveredMaterial;
 
@@ -37,6 +40,9 @@ public class PandemicAgent : Agent
     //The PandemicArea
     private PandemicArea pandemicArea;
 
+    //StatRecorder
+    private statRecorder statRecorder;
+
     //The gameObject of the Pandemic Area
     private GameObject pandemicAreaObj;
 
@@ -46,6 +52,7 @@ public class PandemicAgent : Agent
     // Speed of agent movement.
     public float moveSpeed = 2;
 
+    [HideInInspector]
     //Check if agent is frozen or not;
     public bool isFrozen = false;
 
@@ -63,9 +70,11 @@ public class PandemicAgent : Agent
     [Tooltip("Recovery time after the infection starts")]
     public float recoverTime = 50f;
 
+    [HideInInspector]
     [Tooltip("Number of infected bots at start")]
     public int infectedCount;
-
+    
+    [HideInInspector]
     [Tooltip("Number of healthy bots at start")]
     public int healthyCount;
 
@@ -118,6 +127,7 @@ public class PandemicAgent : Agent
         //Get the PandemicArea and its settings
         pandemicArea = GetComponentInParent<PandemicArea>();
         pandemicAreaObj = pandemicArea.gameObject;
+        statRecorder = pandemicAreaObj.GetComponentInChildren<statRecorder>();
 
         //define parameters as environment parameters for randomization and curriculum learning
         m_ResetParams = Academy.Instance.EnvironmentParameters;
@@ -132,15 +142,19 @@ public class PandemicAgent : Agent
         //sensor.AddObservation(starvingLevel/100); // Dividing with 100 for normalization
         sensor.AddObservation(localVelocity.x);
         sensor.AddObservation(localVelocity.z);
-        //sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
+        sensor.AddOneHotObservation((int)m_InfectionStatus, NUM_ITEM_TYPES); //A shortcut for one-hot-style observations.
 
         //Observations for getting reward easily
-        sensor.AddObservation(distance);
-        sensor.AddObservation(direction.normalized);
+        //sensor.AddObservation(distance);
+        //sensor.AddObservation(direction.normalized);
 
         //Infection sayısının healthy saysına oranı vs verilebilir but not yet.
         //sensor.AddObservation(pandemicArea.infectedBotCount);
 
+        //Agentların health status sayısı verilebilir
+        //sensor.AddObservation(pandemicArea.healthyCounter);
+        //sensor.AddObservation(pandemicArea.infectedCounter);
+        //sensor.AddObservation(pandemicArea.recoveredCounter);
     }
 
     /// <summary>
@@ -266,9 +280,26 @@ public class PandemicAgent : Agent
             float tempReward = 1 - (starvingLevel / 100);
             //AddReward(1- tempReward);
             AddReward(1f);
+            //Add in TotalScore
+            statRecorder.totalScore += 1;
+
             collision.gameObject.transform.position = pandemicArea.ChooseRandomPosition();
             starvingLevel = 100f;
         }
+        if (m_InfectionStatus == agentStatus.HEALTHY)
+        {
+            if (collision.gameObject.CompareTag("agent"))
+            {
+                //Each agent will count this therefore its half.
+
+                statRecorder.collisionCounts += 0.5f;
+            }
+            else if (collision.gameObject.CompareTag("dummyBot"))
+            {
+                statRecorder.collisionCounts += 1f;
+            }
+        }
+
 
     }
 
@@ -319,7 +350,6 @@ public class PandemicAgent : Agent
                 }
             }
         }
-
     }
     /// <summary>
     /// Gets the distance between agents and expose with infenction probability.
@@ -343,13 +373,17 @@ public class PandemicAgent : Agent
             //Debug.Log("You got infected");
             m_InfectionStatus = agentStatus.INFECTED;
             changeAgentStatus();
-            AddReward(-2f);
+            SetReward(-1f);
+            //pandemicArea.addRewardAllAgents(-0.5f);
+            statRecorder.infectedCounts += 1;
 
             //EndEpisode();  
             //If infector is an agent then also penalize it too for infecting someone. Shame!
             if (infector.GetComponent<PandemicAgent>())
             {
-                infector.GetComponent<PandemicAgent>().AddReward(-2f);
+                infector.GetComponent<PandemicAgent>().AddReward(-1f);
+                statRecorder.totalScore += -1;
+
             }
 
         }
@@ -375,7 +409,10 @@ public class PandemicAgent : Agent
         if (m_InfectionStatus == agentStatus.HEALTHY)
         {
             //Survive Bonus
-            AddReward(0.001f);
+            SetReward(0.01f);
+
+            //Add to totalScore also
+            statRecorder.totalScore += 0.01f;
         }
         //Debug.Log("I'm now infected and time left for my recovery: " + recoverTime);
         else if (m_InfectionStatus == agentStatus.INFECTED)

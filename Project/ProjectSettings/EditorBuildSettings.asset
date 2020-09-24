@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/PandemicSimulation/Scenes/T_SingleAgent.unity
+    guid: 5bf0911fffde31c4b996144abdc17506
+  - enabled: 1
+    path: Assets/PandemicSimulation/Scenes/SimulationScene.unity
+    guid: b0870f9bfa9a4c8489f05a464a9989a5
   m_configObjects: {}

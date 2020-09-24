@@ -27,7 +27,6 @@ public class PandemicArea : MonoBehaviour
     //List of Agents
     public List<GameObject> agents = new List<GameObject>();
 
-
     [Header("InfectionSettings")]
     [Tooltip("The maximum possible distance for exposure to occur aka radius (Default 8f)")]
     public float exposureRadius = 8f;
@@ -82,6 +81,9 @@ public class PandemicArea : MonoBehaviour
 
     //Environment Reset Parameters
     public EnvironmentParameters m_ResetParams;
+
+    //StatRecorder
+    private statRecorder statRecorder;
 
     //Is there any agent in the environment
     private bool isAgentExist;
@@ -158,6 +160,10 @@ public class PandemicArea : MonoBehaviour
         infectedCounter = 0;
         healthyCounter = healthyBotCount + infectedBotCount + agents.Count; //Count all of them and infected ones will be removed from DummyBot.cs
         recoveredCounter = 0;
+
+        statRecorder.totalScore = 0;
+        statRecorder.infectedCounts = 0;
+        statRecorder.collisionCounts = 0;
 
         if (isAgentExist)
         {
@@ -241,14 +247,28 @@ public class PandemicArea : MonoBehaviour
             }
         }
 
-        
-    }
 
+    }
+    public void endAllAgentsEpisodes()
+    {
+        foreach(GameObject agent in agents)
+        {
+            agent.GetComponent<PandemicAgent>().EndEpisode();
+        }
+    }
+    public void addRewardAllAgents(float reward)
+    {
+        foreach(GameObject agent in agents)
+        {
+            agent.GetComponent<PandemicAgent>().AddReward(reward);
+        }
+    }
 
     public void Awake()
     {
         exportObj = GetComponentInChildren<ExportCsv>().gameObject;
         exportObj.GetComponent<ExportCsv>().addHeaders();
+        statRecorder = GetComponentInChildren<statRecorder>();
 
         if (GetComponentInChildren<PandemicAgent>())
             isAgentExist = true;
@@ -268,8 +288,8 @@ public class PandemicArea : MonoBehaviour
         if (isAgentExist)
         {
             m_ResetParams = agents[0].GetComponent<PandemicAgent>().m_ResetParams;
-            healthyBotCount = (int)m_ResetParams.GetWithDefault("healthyCount", healthyBotCount);
-            infectedBotCount = (int)m_ResetParams.GetWithDefault("infectedCount", infectedBotCount);
+            healthyBotCount = Mathf.FloorToInt(m_ResetParams.GetWithDefault("healthyCount", healthyBotCount));
+            infectedBotCount = Mathf.FloorToInt(m_ResetParams.GetWithDefault("infectedCount", infectedBotCount));
         }
         else //If an agent exist in the environment it will call the ResetPandemicArea() function in OnEpisodeBegin() anyway. So dont call twice.
         {
@@ -293,7 +313,6 @@ public class PandemicArea : MonoBehaviour
             //When restart simulation restart also values
             //Actually useless in a way we will not use Restart key during the simulation.
             exportObj.GetComponent<ExportCsv>().record();
-
         }
     }
 
