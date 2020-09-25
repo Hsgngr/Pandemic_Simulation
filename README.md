@@ -61,12 +61,6 @@ tensorboard --logdir results
 This will open a localhost where you can see all the graphs that ml-agents provide to you
 
 ## Screenshots from the simulation:
-Epidemic Spread Simulation
-
-<p>
-<img src="images/sim_1.gif">
-</p>
-
 
 Single-Agent Environment: Surviving in an Epidemic outbreak and collecting rewards
 
