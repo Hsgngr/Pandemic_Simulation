@@ -1,0 +1,2 @@
+Serving TensorBoard on localhost; to expose to the network, use a proxy or pass --bind_all
+TensorBoard 2.1.0 at http://localhost:6006/ (Press CTRL+C to quit)
